@@ -15,14 +15,14 @@ using namespace std;
 void updateStates(SDL_Joystick* joystick, int* states)
 {
     SDL_JoystickUpdate();
-    
+
     if(SDL_JoystickNumAxes(joystick) == 5) //windows
     {
         states[0] = SDL_JoystickGetAxis(joystick, 0);               //LS left-right
         states[1] = SDL_JoystickGetAxis(joystick, 1);               //LS up-down
-        states[2] = SDL_JoystickGetAxis(joystick, 2);               //RS left-right
-        states[3] = SDL_JoystickGetAxis(joystick, 3);               //RS up-down 
-        states[4] = SDL_JoystickGetAxis(joystick, 4);               //Trigger Axis
+        states[2] = SDL_JoystickGetAxis(joystick, 4);               //RS left-right
+        states[3] = SDL_JoystickGetAxis(joystick, 3);               //RS up-down
+        states[4] = SDL_JoystickGetAxis(joystick, 2);               //Trigger Axis
 
         states[5] = SDL_JoystickGetHat(joystick, 0);                //HAT
 
@@ -44,8 +44,8 @@ void updateStates(SDL_Joystick* joystick, int* states)
 
         states[0] = SDL_JoystickGetAxis(joystick, 0);               //LS left-right
         states[1] = SDL_JoystickGetAxis(joystick, 1);               //LS up-down
-        states[2] = SDL_JoystickGetAxis(joystick, 3);               //RS left-right 
-        states[3] = SDL_JoystickGetAxis(joystick, 4);               //RS up-down 
+        states[2] = SDL_JoystickGetAxis(joystick, 3);               //RS left-right
+        states[3] = SDL_JoystickGetAxis(joystick, 4);               //RS up-down
 
         states[4] = (SDL_JoystickGetAxis(joystick, 2) -             //Combine triggers into 1 axis
                     SDL_JoystickGetAxis(joystick,5))/2;              //to be same as windows
@@ -65,7 +65,7 @@ void updateStates(SDL_Joystick* joystick, int* states)
 
         states[14] = SDL_JoystickGetButton(joystick, 9);            //L3
         states[15] = SDL_JoystickGetButton(joystick, 10);           //R3
-    }   
+    }
 
 }
 
@@ -75,7 +75,7 @@ void printToConsole(int* states)
     {
         cout << states[i] << ' ';
     }
-    cout << endl;    
+    cout << endl;
 }
 
 
@@ -91,16 +91,19 @@ void loadImages(SDL_Surface** images, SDL_Rect** offsets)
     images[7] = SDL_LoadBMP("gui/right.bmp");
     images[8] = SDL_LoadBMP("gui/down.bmp");
     images[9] = SDL_LoadBMP("gui/left.bmp");
-    
+    images[10] = SDL_LoadBMP("gui/dot.bmp");
+
     for(int i = 0; i<20; i++){
         offsets[i] = new SDL_Rect;
     }
+    offsets[0]->x = 268; offsets[0]->y = 247;
+    offsets[1]->x = 499; offsets[1]->y = 246;
 
-    offsets[6]->x = 587; offsets[6]->y = 179; 
-    offsets[7]->x = 640; offsets[7]->y = 126; 
-    offsets[8]->x = 534; offsets[8]->y = 127; 
-    offsets[9]->x = 586; offsets[9]->y = 74; 
-    offsets[10]->x = 120; offsets[10]->y = 28; 
+    offsets[6]->x = 587; offsets[6]->y = 179;
+    offsets[7]->x = 640; offsets[7]->y = 126;
+    offsets[8]->x = 534; offsets[8]->y = 127;
+    offsets[9]->x = 586; offsets[9]->y = 74;
+    offsets[10]->x = 120; offsets[10]->y = 28;
     offsets[11]->x = 561; offsets[11]->y = 27;
     offsets[12]->x = 293; offsets[12]->y = 125;
     offsets[13]->x = 436; offsets[13]->y = 126;
@@ -150,6 +153,20 @@ void updateGUI(SDL_Surface* screen, SDL_Surface** images, SDL_Rect** offsets, in
     if(states[5] == 8 || states[5] == 12 || states[5] == 9)
         SDL_BlitSurface(images[9],NULL,screen,offsets[19]);
 
+    offsets[0]->x += states[0] * 40 / 32767;
+    offsets[0]->y += states[1] * 40 / 32767;
+    SDL_BlitSurface(images[10],NULL,screen,offsets[0]);
+    offsets[0]->x -= states[0] * 40 / 32767;
+    offsets[0]->y -= states[1] * 40 / 32767;
+
+    offsets[1]->x += states[2] * 40 / 32767;
+    offsets[1]->y += states[3] * 40 / 32767;
+    SDL_BlitSurface(images[10],NULL,screen,offsets[1]);
+    offsets[1]->x -= states[2] * 40 / 32767;
+    offsets[1]->y -= states[3] * 40 / 32767;
+
+
+
     SDL_Flip(screen);
 }
 
@@ -168,7 +185,7 @@ int main(int argc, char*  argv[])
         cout << "Couldn't initialize SDL: " << SDL_GetError() << endl;
         exit(1);
     }
-    
+
     if(SDL_NumJoysticks() == 0)
     {
         cout << "No joysticks found\n";
@@ -176,9 +193,9 @@ int main(int argc, char*  argv[])
     }
 
     SDL_Surface* screen = SDL_SetVideoMode(771,501,0,0);
-    SDL_Surface** images = new SDL_Surface*[10];
+    SDL_Surface** images = new SDL_Surface*[12];
     SDL_Rect** offsets = new SDL_Rect*[20];
-    loadImages(images,offsets);    
+    loadImages(images,offsets);
 
     SDL_Joystick* joystick = SDL_JoystickOpen(0);
     Uint8* keystates = SDL_GetKeyState(NULL);
@@ -205,7 +222,7 @@ int main(int argc, char*  argv[])
 
 
 
-    Uint32 prevTime = SDL_GetTicks();    
+    Uint32 prevTime = SDL_GetTicks();
     while(keystates[SDLK_ESCAPE] == 0)
     {
         SDL_PumpEvents();
@@ -217,7 +234,7 @@ int main(int argc, char*  argv[])
         updateGUI(screen,images,offsets,states);
 
         printToConsole(states);
-        
+
         ////!!! send packet
     }
 
