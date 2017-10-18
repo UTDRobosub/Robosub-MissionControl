@@ -92,12 +92,15 @@ void loadImages(SDL_Surface** images, SDL_Rect** offsets)
     images[8] = SDL_LoadBMP("gui/down.bmp");
     images[9] = SDL_LoadBMP("gui/left.bmp");
     images[10] = SDL_LoadBMP("gui/dot.bmp");
+    images[11] = SDL_LoadBMP("gui/bar.bmp");
 
     for(int i = 0; i<20; i++){
         offsets[i] = new SDL_Rect;
     }
+
     offsets[0]->x = 268; offsets[0]->y = 247;
     offsets[1]->x = 499; offsets[1]->y = 246;
+    offsets[2]->x = 383; offsets[2]->y = 21;
 
     offsets[6]->x = 587; offsets[6]->y = 179;
     offsets[7]->x = 640; offsets[7]->y = 126;
@@ -164,6 +167,10 @@ void updateGUI(SDL_Surface* screen, SDL_Surface** images, SDL_Rect** offsets, in
     SDL_BlitSurface(images[10],NULL,screen,offsets[1]);
     offsets[1]->x -= states[2] * 40 / 32767;
     offsets[1]->y -= states[3] * 40 / 32767;
+
+    offsets[2]->x -= states[4] * 100 / 32767;
+    SDL_BlitSurface(images[11],NULL,screen,offsets[2]);
+    offsets[2]->x += states[4] * 100 / 32767;
 
 
 
