@@ -1,6 +1,6 @@
 
 //requires SDL 1.2
-//if using a logitech controller, switch to Xinput mode
+//if using a logitech controller, set to Xinput mode
 
 
 #define POLLING_INTERVAL 5
@@ -85,16 +85,32 @@ void loadImages(SDL_Surface** images, SDL_Rect** offsets)
     images[1] = SDL_LoadBMP("gui/button1.bmp");
     images[2] = SDL_LoadBMP("gui/button2.bmp");
     images[3] = SDL_LoadBMP("gui/button3.bmp");
+    images[4] = SDL_LoadBMP("gui/button4.bmp");
+    images[5] = SDL_LoadBMP("gui/button5.bmp");
+    images[6] = SDL_LoadBMP("gui/up.bmp");
+    images[7] = SDL_LoadBMP("gui/right.bmp");
+    images[8] = SDL_LoadBMP("gui/down.bmp");
+    images[9] = SDL_LoadBMP("gui/left.bmp");
     
-    for(int i = 0; i<18; i++){
+    for(int i = 0; i<20; i++){
         offsets[i] = new SDL_Rect;
     }
+
     offsets[6]->x = 587; offsets[6]->y = 179; 
     offsets[7]->x = 640; offsets[7]->y = 126; 
     offsets[8]->x = 534; offsets[8]->y = 127; 
     offsets[9]->x = 586; offsets[9]->y = 74; 
     offsets[10]->x = 120; offsets[10]->y = 28; 
     offsets[11]->x = 561; offsets[11]->y = 27;
+    offsets[12]->x = 293; offsets[12]->y = 125;
+    offsets[13]->x = 436; offsets[13]->y = 126;
+    offsets[14]->x = 226; offsets[14]->y = 203;
+    offsets[15]->x = 457; offsets[15]->y = 202;
+
+    offsets[16]->x = 142; offsets[16]->y = 94;
+    offsets[17]->x = 170; offsets[17]->y = 134;
+    offsets[18]->x = 142; offsets[18]->y = 163;
+    offsets[19]->x = 101; offsets[19]->y = 136;
 
 }
 
@@ -115,11 +131,24 @@ void updateGUI(SDL_Surface* screen, SDL_Surface** images, SDL_Rect** offsets, in
         SDL_BlitSurface(images[2],NULL,screen,offsets[10]);
     if(states[11])
         SDL_BlitSurface(images[3],NULL,screen,offsets[11]);
-
-    
+    if(states[12])
+        SDL_BlitSurface(images[4],NULL,screen,offsets[12]);
+    if(states[13])
+        SDL_BlitSurface(images[4],NULL,screen,offsets[13]);
+    if(states[14])
+        SDL_BlitSurface(images[5],NULL,screen,offsets[14]);
     if(states[15])
-        SDL_BlitSurface(images[1],NULL,screen,offsets[15]);
+        SDL_BlitSurface(images[5],NULL,screen,offsets[15]);
 
+
+    if(states[5] == 1 || states[5] == 9 || states[5] == 3)
+        SDL_BlitSurface(images[6],NULL,screen,offsets[16]);
+    if(states[5] == 2 || states[5] == 3 || states[5] == 6)
+        SDL_BlitSurface(images[7],NULL,screen,offsets[17]);
+    if(states[5] == 4 || states[5] == 6 || states[5] == 12)
+        SDL_BlitSurface(images[8],NULL,screen,offsets[18]);
+    if(states[5] == 8 || states[5] == 12 || states[5] == 9)
+        SDL_BlitSurface(images[9],NULL,screen,offsets[19]);
 
     SDL_Flip(screen);
 }
@@ -147,13 +176,13 @@ int main(int argc, char*  argv[])
     }
 
     SDL_Surface* screen = SDL_SetVideoMode(771,501,0,0);
-    SDL_Surface** images = new SDL_Surface*[8];
-    SDL_Rect** offsets = new SDL_Rect*[18];
+    SDL_Surface** images = new SDL_Surface*[10];
+    SDL_Rect** offsets = new SDL_Rect*[20];
     loadImages(images,offsets);    
 
     SDL_Joystick* joystick = SDL_JoystickOpen(0);
     Uint8* keystates = SDL_GetKeyState(NULL);
-    int* states = new int[18];
+    int* states = new int[16];
 
 
     if(SDL_JoystickNumAxes(joystick) == 5){
@@ -193,6 +222,7 @@ int main(int argc, char*  argv[])
     }
 
     delete[] images;
+    delete[] offsets;
     delete[] states;
 
     return 0;
