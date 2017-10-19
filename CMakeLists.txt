@@ -3,9 +3,8 @@ project(robosub-controller CXX)
 find_package(SDL REQUIRED)
 set(CMAKE_CXX_STANDARD 11)
 
-file(GLOB SOURCES src/*.cpp)
+file(GLOB SOURCES controller/src/*.cpp)
 
 add_executable(robosub-controller ${SOURCES})
-target_link_libraries(robosub-controller 
-${SDL_LIBRARY})
+target_link_libraries(robosub-controller ${SDL_LIBRARY})
 target_compile_features(robosub-controller PRIVATE cxx_range_for)
