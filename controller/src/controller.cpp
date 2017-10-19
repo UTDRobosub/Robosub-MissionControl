@@ -97,18 +97,18 @@ SDL_Surface** loadImages()
 {
     SDL_Surface** images = new SDL_Surface*[12];
     
-    images[0] = SDL_LoadBMP("gui/controller.bmp");                          //Background + Controller
-    images[1] = SDL_LoadBMP("gui/button1.bmp");                             //A,B,X,Y
-    images[2] = SDL_LoadBMP("gui/button2.bmp");                             //L1
-    images[3] = SDL_LoadBMP("gui/button3.bmp");                             //R1
-    images[4] = SDL_LoadBMP("gui/button4.bmp");                             //Start,Select
-    images[5] = SDL_LoadBMP("gui/button5.bmp");                             //L3,R3
-    images[6] = SDL_LoadBMP("gui/up.bmp");                                  //D-Pad Up
-    images[7] = SDL_LoadBMP("gui/right.bmp");                               //D-Pad Right
-    images[8] = SDL_LoadBMP("gui/down.bmp");                                //D-Pad Down
-    images[9] = SDL_LoadBMP("gui/left.bmp");                                //D-Pad Left
-    images[10] = SDL_LoadBMP("gui/dot.bmp");                                //Analog Stick Dot
-    images[11] = SDL_LoadBMP("gui/bar.bmp");                                //L2-R2 Axis Bar
+    images[0] = SDL_LoadBMP("../images/controller.bmp");                          //Background + Controller
+    images[1] = SDL_LoadBMP("../images/button1.bmp");                             //A,B,X,Y
+    images[2] = SDL_LoadBMP("../images/button2.bmp");                             //L1
+    images[3] = SDL_LoadBMP("../images/button3.bmp");                             //R1
+    images[4] = SDL_LoadBMP("../images/button4.bmp");                             //Start,Select
+    images[5] = SDL_LoadBMP("../images/button5.bmp");                             //L3,R3
+    images[6] = SDL_LoadBMP("../images/up.bmp");                                  //D-Pad Up
+    images[7] = SDL_LoadBMP("../images/right.bmp");                               //D-Pad Right
+    images[8] = SDL_LoadBMP("../images/down.bmp");                                //D-Pad Down
+    images[9] = SDL_LoadBMP("../images/left.bmp");                                //D-Pad Left
+    images[10] = SDL_LoadBMP("../images/dot.bmp");                                //Analog Stick Dot
+    images[11] = SDL_LoadBMP("../images/bar.bmp");                                //L2-R2 Axis Bar
 
     return images;
 }
