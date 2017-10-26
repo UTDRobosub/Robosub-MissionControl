@@ -2,7 +2,7 @@
 //reads gamepad input, displays states in gui
 
 //!! Still needs code to send controller states over network
-      
+
 //requires SDL 1.2
 //if using a logitech controller, set to Xinput mode
 
@@ -21,14 +21,14 @@ void updateStates(SDL_Joystick* joystick, Uint8* states)
 
     if(SDL_JoystickNumAxes(joystick) == 4) //directx, either os
     {
-        
+
         states[0] = SDL_JoystickGetAxis(joystick, 0)/256 + 128;               //LS left-right
         states[1] = SDL_JoystickGetAxis(joystick, 1)/256 + 128;               //LS up-down
         states[2] = SDL_JoystickGetAxis(joystick, 2)/256 + 128;               //RS left-right
         states[3] = SDL_JoystickGetAxis(joystick, 3)/256 + 128;               //RS up-down
-       
-        states[4] = 255 * SDL_JoystickGetButton(joystick, 6); 
-        states[5] = 255 * SDL_JoystickGetButton(joystick, 7); 
+
+        states[4] = 255 * SDL_JoystickGetButton(joystick, 6);
+        states[5] = 255 * SDL_JoystickGetButton(joystick, 7);
 
         states[6] = SDL_JoystickGetHat(joystick, 0);                //HAT
 
@@ -56,7 +56,7 @@ void updateStates(SDL_Joystick* joystick, Uint8* states)
             states[4] = SDL_JoystickGetAxis(joystick, 2)/128;
             states[5] = 0;
         }
-        else if(SDL_JoystickGetAxis(joystick, 2) > 0)
+        else if(SDL_JoystickGetAxis(joystick, 2) < 0)
         {
             states[4] = 0;
             states[5] = -SDL_JoystickGetAxis(joystick, 2)/128;
@@ -79,7 +79,7 @@ void updateStates(SDL_Joystick* joystick, Uint8* states)
         states[14] = SDL_JoystickGetButton(joystick, 7);            //Start
         states[15] = SDL_JoystickGetButton(joystick, 8);            //L3
         states[16] = SDL_JoystickGetButton(joystick, 9);            //R3
-        
+
         states[17] = 1; //input mode
 
     }
@@ -93,14 +93,14 @@ void updateStates(SDL_Joystick* joystick, Uint8* states)
         states[3] = SDL_JoystickGetAxis(joystick, 4)/256 + 128;               //RS up-down
 
         if(SDL_JoystickGetAxis(joystick, 2) - SDL_JoystickGetAxis(joystick, 5) > 0)
-        {  
-            states[4] = (Uint8)((SDL_JoystickGetAxis(joystick, 2)-SDL_JoystickGetAxis(joystick,5))/256 + 256); 
+        {
+            states[4] = (Uint8)((SDL_JoystickGetAxis(joystick, 2)-SDL_JoystickGetAxis(joystick,5))/256 + 256);
             states[5] = 0;
         }
         else if(SDL_JoystickGetAxis(joystick, 2) - SDL_JoystickGetAxis(joystick, 5) < 0)
         {
             states[4] = 0;
-            states[5] = (Uint8)((SDL_JoystickGetAxis(joystick, 5)-SDL_JoystickGetAxis(joystick,2))/256 + 256); 
+            states[5] = (Uint8)((SDL_JoystickGetAxis(joystick, 5)-SDL_JoystickGetAxis(joystick,2))/256 + 256);
         }
         else
         {
@@ -152,7 +152,7 @@ void delay()
 SDL_Surface** loadImages()
 {
     SDL_Surface** images = new SDL_Surface*[12];
-    
+
     images[0] = SDL_LoadBMP("../images/controller.bmp");                          //Background + Controller
     images[1] = SDL_LoadBMP("../images/button1.bmp");                             //A,B,X,Y
     images[2] = SDL_LoadBMP("../images/button2.bmp");                             //L1
@@ -173,8 +173,8 @@ SDL_Surface** loadImages()
 //create array of rectangles that hold xy pairs where
 //bitmaps should be blitted on screen
 SDL_Rect** loadOffsets()
-{ 
-    SDL_Rect** offsets = new SDL_Rect*[20]; 
+{
+    SDL_Rect** offsets = new SDL_Rect*[20];
     for(int i = 0; i<20; i++){
         offsets[i] = new SDL_Rect;
     }
@@ -271,7 +271,7 @@ void updateGUI(SDL_Surface* screen, SDL_Surface** images, SDL_Rect** offsets, Ui
     offsets[2]->x += ((int)states[5]) * 100 / 256;
     SDL_BlitSurface(images[11],NULL,screen,offsets[2]);
     offsets[2]->x -= ((int)states[5]) * 100 / 256;
-    
+
     SDL_Flip(screen);
 }
 
@@ -311,7 +311,7 @@ int main(int argc, char*  argv[])
     //if windows, direct output to console
     if(SDL_JoystickNumAxes(joystick) == 5)
         freopen( "CON", "wt", stdout );
-    
+
 
     //catch unexpected controller layouts
     //if(SDL_JoystickNumAxes(joystick) != 6 && SDL_JoystickNumAxes(joystick) != 5){
@@ -327,7 +327,7 @@ int main(int argc, char*  argv[])
     cout << SDL_JoystickNumButtons(joystick) << " buttons found" << endl;
 
 
-    //create GUI window 
+    //create GUI window
     SDL_Surface* screen = SDL_SetVideoMode(771,501,0,0);
 
 
@@ -341,7 +341,7 @@ int main(int argc, char*  argv[])
         updateStates(joystick, states);
 
         //update keyboard state array
-        SDL_PumpEvents(); 
+        SDL_PumpEvents();
 
         //output
         updateGUI(screen,images,offsets,states);
@@ -349,9 +349,9 @@ int main(int argc, char*  argv[])
 
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
+
         //  send data in states[]
-     
+
         //~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
