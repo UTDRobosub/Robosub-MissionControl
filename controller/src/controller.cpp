@@ -13,70 +13,126 @@
 using namespace std;
 
 
-//Read controller states to int array states[]
-void updateStates(SDL_Joystick* joystick, int* states)
+//Read controller states to byte array states[]
+void updateStates(SDL_Joystick* joystick, Uint8* states)
 {
     SDL_JoystickUpdate();
 
-    if(SDL_JoystickNumAxes(joystick) == 5) //windows
+
+    if(SDL_JoystickNumAxes(joystick) == 4) //directx, either os
     {
-        states[0] = SDL_JoystickGetAxis(joystick, 0);               //LS left-right
-        states[1] = SDL_JoystickGetAxis(joystick, 1);               //LS up-down
-        states[2] = SDL_JoystickGetAxis(joystick, 4);               //RS left-right
-        states[3] = SDL_JoystickGetAxis(joystick, 3);               //RS up-down
-        states[4] = SDL_JoystickGetAxis(joystick, 2);               //Trigger Axis
+        
+        states[0] = SDL_JoystickGetAxis(joystick, 0)/256 + 128;               //LS left-right
+        states[1] = SDL_JoystickGetAxis(joystick, 1)/256 + 128;               //LS up-down
+        states[2] = SDL_JoystickGetAxis(joystick, 2)/256 + 128;               //RS left-right
+        states[3] = SDL_JoystickGetAxis(joystick, 3)/256 + 128;               //RS up-down
+       
+        states[4] = 255 * SDL_JoystickGetButton(joystick, 6); 
+        states[5] = 255 * SDL_JoystickGetButton(joystick, 7); 
 
-        states[5] = SDL_JoystickGetHat(joystick, 0);                //HAT
+        states[6] = SDL_JoystickGetHat(joystick, 0);                //HAT
 
-        states[6] = SDL_JoystickGetButton(joystick, 0);             //A
-        states[7] = SDL_JoystickGetButton(joystick, 1);             //B
-        states[8] = SDL_JoystickGetButton(joystick, 2);             //X
-        states[9] = SDL_JoystickGetButton(joystick, 3);             //Y
-        states[10] = SDL_JoystickGetButton(joystick, 4);            //L1
-        states[11] = SDL_JoystickGetButton(joystick, 5);            //R1
-        states[12] = SDL_JoystickGetButton(joystick, 6);            //Back
-        states[13] = SDL_JoystickGetButton(joystick, 7);            //Start
-        states[14] = SDL_JoystickGetButton(joystick, 8);            //L3
-        states[15] = SDL_JoystickGetButton(joystick, 9);            //R3
+        states[7] = SDL_JoystickGetButton(joystick, 1);             //A
+        states[8] = SDL_JoystickGetButton(joystick, 2);             //B
+        states[9] = SDL_JoystickGetButton(joystick, 0);             //X
+        states[10] = SDL_JoystickGetButton(joystick, 3);             //Y
+        states[11] = SDL_JoystickGetButton(joystick, 4);            //L1
+        states[12] = SDL_JoystickGetButton(joystick, 5);            //R1
+        states[13] = SDL_JoystickGetButton(joystick, 8);            //Back
+        states[14] = SDL_JoystickGetButton(joystick, 9);            //Start
+        states[15] = SDL_JoystickGetButton(joystick, 10);            //L3
+        states[16] = SDL_JoystickGetButton(joystick, 11);            //R3
+    }
+
+    if(SDL_JoystickNumAxes(joystick) == 5) //windows, xinput
+    {
+        states[0] = SDL_JoystickGetAxis(joystick, 0)/256 + 128;               //LS left-right
+        states[1] = SDL_JoystickGetAxis(joystick, 1)/256 + 128;               //LS up-down
+        states[2] = SDL_JoystickGetAxis(joystick, 4)/256 + 128;               //RS left-right
+        states[3] = SDL_JoystickGetAxis(joystick, 3)/256 + 128;               //RS up-down
+
+        if(SDL_JoystickGetAxis(joystick, 2) > 0)
+        {
+            states[4] = SDL_JoystickGetAxis(joystick, 2)/128;
+            states[5] = 0;
+        }
+        else if(SDL_JoystickGetAxis(joystick, 2) > 0)
+        {
+            states[4] = 0;
+            states[5] = -SDL_JoystickGetAxis(joystick, 2)/128;
+        }
+        else
+        {
+            states[4] = 0;
+            states[5] = 0;
+        }
+
+        states[6] = SDL_JoystickGetHat(joystick, 0);                //HAT
+
+        states[7] = SDL_JoystickGetButton(joystick, 0);             //A
+        states[8] = SDL_JoystickGetButton(joystick, 1);             //B
+        states[9] = SDL_JoystickGetButton(joystick, 2);             //X
+        states[10] = SDL_JoystickGetButton(joystick, 3);             //Y
+        states[11] = SDL_JoystickGetButton(joystick, 4);            //L1
+        states[12] = SDL_JoystickGetButton(joystick, 5);            //R1
+        states[13] = SDL_JoystickGetButton(joystick, 6);            //Back
+        states[14] = SDL_JoystickGetButton(joystick, 7);            //Start
+        states[15] = SDL_JoystickGetButton(joystick, 8);            //L3
+        states[16] = SDL_JoystickGetButton(joystick, 9);            //R3
+        
+        states[17] = 1; //input mode
 
     }
 
-    else if(SDL_JoystickNumAxes(joystick) == 6)  //linux
+    else if(SDL_JoystickNumAxes(joystick) == 6)  //linux, xinput
     {
 
-        states[0] = SDL_JoystickGetAxis(joystick, 0);               //LS left-right
-        states[1] = SDL_JoystickGetAxis(joystick, 1);               //LS up-down
-        states[2] = SDL_JoystickGetAxis(joystick, 3);               //RS left-right
-        states[3] = SDL_JoystickGetAxis(joystick, 4);               //RS up-down
+        states[0] = SDL_JoystickGetAxis(joystick, 0)/256 + 128;               //LS left-right
+        states[1] = SDL_JoystickGetAxis(joystick, 1)/256 + 128;               //LS up-down
+        states[2] = SDL_JoystickGetAxis(joystick, 3)/256 + 128;               //RS left-right
+        states[3] = SDL_JoystickGetAxis(joystick, 4)/256 + 128;               //RS up-down
 
-        states[4] = (SDL_JoystickGetAxis(joystick, 2) -             //Combine triggers into 1 axis
-                    SDL_JoystickGetAxis(joystick,5))/2;             //to be consistent with windows
+        if(SDL_JoystickGetAxis(joystick, 2) - SDL_JoystickGetAxis(joystick, 5) > 0)
+        {  
+            states[4] = (Uint8)((SDL_JoystickGetAxis(joystick, 2)-SDL_JoystickGetAxis(joystick,5))/256 + 256); 
+            states[5] = 0;
+        }
+        else if(SDL_JoystickGetAxis(joystick, 2) - SDL_JoystickGetAxis(joystick, 5) < 0)
+        {
+            states[4] = 0;
+            states[5] = (Uint8)((SDL_JoystickGetAxis(joystick, 5)-SDL_JoystickGetAxis(joystick,2))/256 + 256); 
+        }
+        else
+        {
+            states[4] = 0;
+            states[5] = 0;
+        }
 
-        states[5] = SDL_JoystickGetHat(joystick, 0);                //HAT
 
-        states[6] = SDL_JoystickGetButton(joystick, 0);             //A
-        states[7] = SDL_JoystickGetButton(joystick, 1);             //B
-        states[8] = SDL_JoystickGetButton(joystick, 2);             //X
-        states[9] = SDL_JoystickGetButton(joystick, 3);             //Y
-        states[10] = SDL_JoystickGetButton(joystick, 4);            //L1
-        states[11] = SDL_JoystickGetButton(joystick, 5);            //R1
-        states[12] = SDL_JoystickGetButton(joystick, 6);            //Back
-        states[13] = SDL_JoystickGetButton(joystick, 7);            //Start
+        states[6] = SDL_JoystickGetHat(joystick, 0);                //HAT
 
-        //states[] = SDL_JoystickGetButton(joystick, 8);            //Center, windows doesn't detect, so we'll skip
+        states[7] = SDL_JoystickGetButton(joystick, 0);             //A
+        states[8] = SDL_JoystickGetButton(joystick, 1);             //B
+        states[9] = SDL_JoystickGetButton(joystick, 2);             //X
+        states[10] = SDL_JoystickGetButton(joystick, 3);            //Y
+        states[11] = SDL_JoystickGetButton(joystick, 4);            //L1
+        states[12] = SDL_JoystickGetButton(joystick, 5);            //R1
+        states[13] = SDL_JoystickGetButton(joystick, 6);            //Back
+        states[14] = SDL_JoystickGetButton(joystick, 7);            //Start
+        states[15] = SDL_JoystickGetButton(joystick, 9);            //L3
+        states[16] = SDL_JoystickGetButton(joystick, 10);           //R3
 
-        states[14] = SDL_JoystickGetButton(joystick, 9);            //L3
-        states[15] = SDL_JoystickGetButton(joystick, 10);           //R3
+        states[17] = 2; //input mode
     }
 
 }
 
 //Output controller states to console
-void printToConsole(int* states)
+void printToConsole(Uint8* states)
 {
-    for(int i = 0; i < 16; i++)
+    for(int i = 0; i < 18; i++)
     {
-        cout << states[i] << ' ';
+        cout << (int)states[i] << ' ';
     }
     cout << endl;
 }
@@ -151,66 +207,71 @@ SDL_Rect** loadOffsets()
 
 
 //Blit images to screen at proper offset, based on controller states
-void updateGUI(SDL_Surface* screen, SDL_Surface** images, SDL_Rect** offsets, int* states)
+void updateGUI(SDL_Surface* screen, SDL_Surface** images, SDL_Rect** offsets, Uint8* states)
 {
 
     //background
     SDL_BlitSurface(images[0],NULL,screen,NULL);
 
     //buttons
-    if(states[6])
-        SDL_BlitSurface(images[1],NULL,screen,offsets[6]);                  //A
     if(states[7])
-        SDL_BlitSurface(images[1],NULL,screen,offsets[7]);                  //B
+        SDL_BlitSurface(images[1],NULL,screen,offsets[6]);                  //A
     if(states[8])
-        SDL_BlitSurface(images[1],NULL,screen,offsets[8]);                  //X
+        SDL_BlitSurface(images[1],NULL,screen,offsets[7]);                  //B
     if(states[9])
-        SDL_BlitSurface(images[1],NULL,screen,offsets[9]);                  //Y
+        SDL_BlitSurface(images[1],NULL,screen,offsets[8]);                  //X
     if(states[10])
-        SDL_BlitSurface(images[2],NULL,screen,offsets[10]);                 //L1
+        SDL_BlitSurface(images[1],NULL,screen,offsets[9]);                  //Y
     if(states[11])
-        SDL_BlitSurface(images[3],NULL,screen,offsets[11]);                 //R1
+        SDL_BlitSurface(images[2],NULL,screen,offsets[10]);                 //L1
     if(states[12])
-        SDL_BlitSurface(images[4],NULL,screen,offsets[12]);                 //Select
+        SDL_BlitSurface(images[3],NULL,screen,offsets[11]);                 //R1
     if(states[13])
-        SDL_BlitSurface(images[4],NULL,screen,offsets[13]);                 //Start
+        SDL_BlitSurface(images[4],NULL,screen,offsets[12]);                 //Select
     if(states[14])
-        SDL_BlitSurface(images[5],NULL,screen,offsets[14]);                 //L3
+        SDL_BlitSurface(images[4],NULL,screen,offsets[13]);                 //Start
     if(states[15])
+        SDL_BlitSurface(images[5],NULL,screen,offsets[14]);                 //L3
+    if(states[16])
         SDL_BlitSurface(images[5],NULL,screen,offsets[15]);                 //R3
 
 
     //D-Pad
-    if(states[5] == 1 || states[5] == 9 || states[5] == 3)
+    if(states[6] == 1 || states[6] == 9 || states[6] == 3)
         SDL_BlitSurface(images[6],NULL,screen,offsets[16]);                 //D-Pad Up
-    if(states[5] == 2 || states[5] == 3 || states[5] == 6)
+    if(states[6] == 2 || states[6] == 3 || states[6] == 6)
         SDL_BlitSurface(images[7],NULL,screen,offsets[17]);                 //D-Pad Right
-    if(states[5] == 4 || states[5] == 6 || states[5] == 12)
+    if(states[6] == 4 || states[6] == 6 || states[6] == 12)
         SDL_BlitSurface(images[8],NULL,screen,offsets[18]);                 //D-Pad Down
-    if(states[5] == 8 || states[5] == 12 || states[5] == 9)
+    if(states[6] == 8 || states[6] == 12 || states[6] == 9)
         SDL_BlitSurface(images[9],NULL,screen,offsets[19]);                 //D-Pad Left
 
 
 
     //Left Analog Stick
-    offsets[0]->x += states[0] * 40 / 32767;
-    offsets[0]->y += states[1] * 40 / 32767;
+    offsets[0]->x += (((int)states[0])-128) * 40 / 128;
+    offsets[0]->y += (((int)states[1])-128) * 40 / 128;
     SDL_BlitSurface(images[10],NULL,screen,offsets[0]);
-    offsets[0]->x -= states[0] * 40 / 32767;
-    offsets[0]->y -= states[1] * 40 / 32767;
+    offsets[0]->x -= (((int)states[0])-128) * 40 / 128;
+    offsets[0]->y -= (((int)states[1])-128) * 40 / 128;
 
     //Right Analog Stick
-    offsets[1]->x += states[2] * 40 / 32767;
-    offsets[1]->y += states[3] * 40 / 32767;
+    offsets[1]->x += (((int)states[2])-128) * 40 / 128;
+    offsets[1]->y += (((int)states[3])-128) * 40 / 128;
     SDL_BlitSurface(images[10],NULL,screen,offsets[1]);
-    offsets[1]->x -= states[2] * 40 / 32767;
-    offsets[1]->y -= states[3] * 40 / 32767;
+    offsets[1]->x -= (((int)states[2])-128) * 40 / 128;
+    offsets[1]->y -= (((int)states[3])-128) * 40 / 128;
 
-    //L2-R2 Axis
-    offsets[2]->x -= states[4] * 100 / 32767;
+    //L2
+    offsets[2]->x -= ((int)states[4]) * 100 / 256;
     SDL_BlitSurface(images[11],NULL,screen,offsets[2]);
-    offsets[2]->x += states[4] * 100 / 32767;
+    offsets[2]->x += ((int)states[4]) * 100 / 256;
 
+    //R2
+    offsets[2]->x += ((int)states[5]) * 100 / 256;
+    SDL_BlitSurface(images[11],NULL,screen,offsets[2]);
+    offsets[2]->x -= ((int)states[5]) * 100 / 256;
+    
     SDL_Flip(screen);
 }
 
@@ -244,7 +305,7 @@ int main(int argc, char*  argv[])
 
     //arrays to hold keyboard and controller states, respectively
     Uint8* keystates = SDL_GetKeyState(NULL);
-    int* states = new int[16];
+    Uint8* states = new Uint8[18];
 
 
     //if windows, direct output to console
@@ -253,10 +314,10 @@ int main(int argc, char*  argv[])
     
 
     //catch unexpected controller layouts
-    if(SDL_JoystickNumAxes(joystick) != 6 && SDL_JoystickNumAxes(joystick) != 5){
-        cout << "Unrecognized controller type. Make sure you are in xinput mode\n";
-        exit(1);
-    }
+    //if(SDL_JoystickNumAxes(joystick) != 6 && SDL_JoystickNumAxes(joystick) != 5){
+    //    cout << "Unrecognized controller type. Make sure you are in xinput mode\n";
+    //    exit(1);
+    //}
 
 
     //print controller info
