@@ -42,6 +42,8 @@ void updateStates(SDL_Joystick* joystick, Uint8* states)
         states[14] = SDL_JoystickGetButton(joystick, 9);            //Start
         states[15] = SDL_JoystickGetButton(joystick, 10);            //L3
         states[16] = SDL_JoystickGetButton(joystick, 11);            //R3
+        
+        states[17] = 0; //input mode
     }
 
     if(SDL_JoystickNumAxes(joystick) == 5) //windows, xinput
