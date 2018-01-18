@@ -15,12 +15,13 @@ class Controller{
 
         SDL_Surface** loadImages();
         SDL_Rect** loadOffsets();
+        void updateGUI();
+        void updateStates();
     public:
         Controller(SDL_Joystick*);
         ~Controller();
-        void updateStates();
-        void updateGUI();
         Uint8* getStates();
+        SDL_Surface* getScreen();
 };
 
 #endif

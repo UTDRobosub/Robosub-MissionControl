@@ -20,8 +20,7 @@ Controller::Controller(SDL_Joystick* j){
     if(offsets == nullptr)
         offsets = loadOffsets();
 
-    //make window
-    screen = SDL_SetVideoMode(771,501,0,0);
+    screen = SDL_CreateRGBSurface(SDL_SWSURFACE,771,501,32,0,0,0,0);
 }
 
 Controller::~Controller(){
@@ -220,7 +219,13 @@ void Controller::updateGUI(){
 
 //return array with controller states
 Uint8* Controller::getStates(){
+    updateStates();
     return states;
+}
+
+SDL_Surface* Controller::getScreen(){
+    updateGUI();
+    return screen;
 }
 
 
