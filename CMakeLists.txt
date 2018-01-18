@@ -5,7 +5,9 @@ find_package(OpenCV REQUIRED)
 find_package(robosub REQUIRED)
 set(CMAKE_CXX_STANDARD 11)
 
-file(GLOB SOURCES controller/src/*.cpp)
+file(GLOB SOURCES src/*.cpp)
+file(GLOB HEADERS include/*.h)
+include_directories(include)
 
 add_executable(robosub-controller ${SOURCES})
 target_link_libraries(robosub-controller ${robosub_LIBS} ${SDL_LIBRARY} ${OpenCV_LIBS})
