@@ -7,7 +7,7 @@
 
 class Controller{
     private:
-        SDL_Joystick* joystick;
+        SDL_Joystick* joystick = nullptr;
         SDL_Surface* screen = nullptr;
         Uint8* states = nullptr; //18 elements
         static SDL_Surface** images;
@@ -18,10 +18,11 @@ class Controller{
         void updateGUI();
         void updateStates();
     public:
-        Controller(SDL_Joystick*);
+        Controller();
         ~Controller();
         Uint8* getStates();
         SDL_Surface* getScreen();
+        void setJoystick(SDL_Joystick*);
 };
 
 #endif

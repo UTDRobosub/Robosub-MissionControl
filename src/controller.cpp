@@ -6,10 +6,7 @@
 SDL_Surface** Controller::images = nullptr;
 SDL_Rect** Controller::offsets = nullptr;
 
-Controller::Controller(SDL_Joystick* j){
-    //assign joystick
-    joystick = j;
-
+Controller::Controller(){
     //array to hold controller states, fill with 0s
     states = new Uint8[18];
     for(int i=0;i<18;i++){states[i]=0;}
@@ -29,10 +26,10 @@ Controller::~Controller(){
 
 //update states array to current controller state
 void Controller::updateStates(){
+  SDL_JoystickUpdate();
+
   if(joystick == nullptr)
     return;
-
-  SDL_JoystickUpdate();
 
   if(SDL_JoystickNumAxes(joystick) == 4) //directx, either os
   {
@@ -226,6 +223,10 @@ Uint8* Controller::getStates(){
 SDL_Surface* Controller::getScreen(){
     updateGUI();
     return screen;
+}
+
+void Controller::setJoystick(SDL_Joystick* j){
+    joystick = j;
 }
 
 
