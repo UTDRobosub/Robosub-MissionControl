@@ -1,8 +1,10 @@
 #include <SDL/SDL.h>
 #include <iostream>
 #include <thread>
+#include <librobosub/robosub.h>
 #include "controller.h"
 using namespace std;
+using namespace robosub;
 
 void control();
 
@@ -19,6 +21,20 @@ int main(int argc, char* argv[]){
 //Display and send controller inputs,
 //Recieve and display diagnostics
 void control(){
+
+    //start udp stuff
+    Uint8 packet[36];
+    Uint8* temp;
+    int udpError;
+    int port;
+    string addr;
+    cout<<"Enter port: ";
+    cin>>port;
+    cout<<"Enter address: ";
+    cin>>addr;
+    UDPS udps;
+    udpError=udps.initSend(port,addr);
+    cout<<"initSend err: "<<udpError<<"\n";
 
     //start SDL
     if(SDL_Init ( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) < 0 ){
@@ -60,10 +76,16 @@ void control(){
             }
         }
 
-
-        //update and get joystick states
-        controller1.getStates();
-        controller2.getStates(); //package and send these
+        //update joystick states and send via udp
+        temp = controller1.getStates();
+        for(int i=0; i<18; i++)
+            packet[i] = temp [i];
+        temp = controller2.getStates();
+        for(int i=0; i<18; i++)
+            packet[i+18] = temp[i];
+        udpError=udps.send(18,(char*)packet);
+        if(udpError)
+            cout<<"send err: "<<udpError<<"\n";
 
         //update gui
         SDL_BlitSurface(controller1.getScreen(),NULL,window,topScreen);
@@ -73,4 +95,3 @@ void control(){
 
     SDL_Quit();
 }
-

@@ -10,5 +10,5 @@ file(GLOB HEADERS include/*.h)
 include_directories(include)
 
 add_executable(robosub-controller ${SOURCES})
-target_link_libraries(robosub-controller ${robosub_LIBS} ${SDL_LIBRARY} ${OpenCV_LIBS})
+target_link_libraries(robosub-controller robosub ${robosub_LIBS} ${SDL_LIBRARY} ${OpenCV_LIBS})
 target_compile_features(robosub-controller PRIVATE cxx_range_for)
