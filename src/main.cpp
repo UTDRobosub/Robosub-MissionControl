@@ -3,16 +3,33 @@
 #include <thread>
 #include <librobosub/robosub.h>
 #include "controller.h"
+#include "main.h"
+
 using namespace std;
 using namespace robosub;
 
-void control();
+void control(string,int);
+void video(int);
+
+bool running = true;
 
 int main(int argc, char* argv[]){
 
-    thread controlThread(control);
+    int controllerPort, videoPort;
+    string addr;
+    
+    cout << "Address: ";
+    cin >> addr;
+    cout << "Video port: ";
+    cin >> videoPort;
+    cout << "Controller port: ";
+    cin >> controllerPort;
+
+    thread controlThread(control,addr,controllerPort);
+    thread videoThread(video,videoPort);
 
     controlThread.join();
+    videoThread.join();
 
     return 0;
 }
@@ -20,27 +37,23 @@ int main(int argc, char* argv[]){
 //Thread for mission control window (everything but video feed)
 //Display and send controller inputs,
 //Recieve and display diagnostics
-void control(){
+void control(string addr, int port){
 
     //start udp stuff
     Uint8 packet[36];
     Uint8* temp;
     int udpError;
-    int port;
-    string addr;
-    cout<<"Enter port: ";
-    cin>>port;
-    cout<<"Enter address: ";
-    cin>>addr;
     UDPS udps;
     udpError=udps.initSend(port,addr);
     cout<<"initSend err: "<<udpError<<"\n";
 
     //start SDL
-    if(SDL_Init ( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) < 0 ){
+    if(SDL_Init (SDL_INIT_JOYSTICK | SDL_INIT_VIDEO) < 0 ){
         cout << "Couldn't initialize SDL: " << SDL_GetError() << endl;
         exit(1);
     }
+
+    Uint8 *keystate = SDL_GetKeyState(NULL);
 
     //get controllers
     Controller controller1;
@@ -48,13 +61,8 @@ void control(){
     controller1.setJoystick(SDL_JoystickOpen(0));
     controller2.setJoystick(SDL_JoystickOpen(1));
 
-    //make window, important locations in window
-    SDL_Surface* window = SDL_SetVideoMode(771,1002,0,0);
-    SDL_Rect* topScreen = new SDL_Rect; topScreen->x = 0; topScreen->y = 0;
-    SDL_Rect* bottomScreen = new SDL_Rect; bottomScreen->x = 0; bottomScreen->y = 501;
 
     SDL_Event event;
-    bool running = true;
     //main loop
     while(running){
 
@@ -63,6 +71,8 @@ void control(){
         while( SDL_PollEvent( &event ) != 0 ) {
             if( event.type == SDL_QUIT )
                 running = false;
+
+            /*
             else if( event.type == SDL_KEYDOWN ) {
                 if(event.key.keysym.sym == SDLK_ESCAPE)
                     running = false;
@@ -74,6 +84,9 @@ void control(){
                     controller2.setJoystick(SDL_JoystickOpen(1));
                 }
             }
+            */
+
+
         }
 
         //update joystick states and send via udp
@@ -87,10 +100,7 @@ void control(){
         if(udpError)
             cout<<"send err: "<<udpError<<"\n";
 
-        //update gui
-        SDL_BlitSurface(controller1.getScreen(),NULL,window,topScreen);
-        SDL_BlitSurface(controller2.getScreen(),NULL,window,bottomScreen);
-        SDL_Flip(window);
+        cout << controller1.toString() << endl;
     }
 
     SDL_Quit();
