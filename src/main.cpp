@@ -16,6 +16,7 @@ bool running = true;
 int controllerData[36];
 
 int main(int argc, char* argv[]){
+    
 
     int videoPort;
     //cout << "Video port: ";

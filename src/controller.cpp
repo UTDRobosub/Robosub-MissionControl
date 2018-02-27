@@ -12,16 +12,16 @@ void Controller::getStates(int* states){
   if(joystick == nullptr)
     return;
 
-  if(SDL_JoystickNumAxes(joystick) == 4) //directx, either os
+  if(SDL_JoystickNumAxes(joystick) == 4) //D mode, either os
   {
 
-      states[0] = SDL_JoystickGetAxis(joystick, 0)/128 + 128;               //LS left-right
-      states[1] = SDL_JoystickGetAxis(joystick, 1)/256 + 128;               //LS up-down
-      states[2] = SDL_JoystickGetAxis(joystick, 2)/256 + 128;               //RS left-right
-      states[3] = SDL_JoystickGetAxis(joystick, 3)/256 + 128;               //RS up-down
+      states[0] = SDL_JoystickGetAxis(joystick, 0)/128;               //LS left-right
+      states[1] = SDL_JoystickGetAxis(joystick, 1)/128;               //LS up-down
+      states[2] = SDL_JoystickGetAxis(joystick, 2)/128;               //RS left-right
+      states[3] = SDL_JoystickGetAxis(joystick, 3)/128;               //RS up-down
 
-      states[4] = 255 * SDL_JoystickGetButton(joystick, 6);
-      states[5] = 255 * SDL_JoystickGetButton(joystick, 7);
+      states[4] = SDL_JoystickGetButton(joystick, 6);
+      states[5] = SDL_JoystickGetButton(joystick, 7);
 
       states[6] = SDL_JoystickGetHat(joystick, 0);                //HAT
 
@@ -36,15 +36,16 @@ void Controller::getStates(int* states){
       states[15] = SDL_JoystickGetButton(joystick, 10);            //L3
       states[16] = SDL_JoystickGetButton(joystick, 11);            //R3
 
-      states[17] = 0; //input mode
+      states[17] = 1; //input mode
   }
 
-  if(SDL_JoystickNumAxes(joystick) == 5) //windows, xinput
+/*
+  if(SDL_JoystickNumAxes(joystick) == 5) //windows, X mode
   {
-      states[0] = SDL_JoystickGetAxis(joystick, 0)/256 + 128;               //LS left-right
-      states[1] = SDL_JoystickGetAxis(joystick, 1)/256 + 128;               //LS up-down
-      states[2] = SDL_JoystickGetAxis(joystick, 4)/256 + 128;               //RS left-right
-      states[3] = SDL_JoystickGetAxis(joystick, 3)/256 + 128;               //RS up-down
+      states[0] = SDL_JoystickGetAxis(joystick, 0)/128;               //LS left-right
+      states[1] = SDL_JoystickGetAxis(joystick, 1)/128;               //LS up-down
+      states[2] = SDL_JoystickGetAxis(joystick, 4)/128;               //RS left-right
+      states[3] = SDL_JoystickGetAxis(joystick, 3)/128;               //RS up-down
 
       if(SDL_JoystickGetAxis(joystick, 2) > 0)
       {
@@ -75,17 +76,18 @@ void Controller::getStates(int* states){
       states[15] = SDL_JoystickGetButton(joystick, 8);            //L3
       states[16] = SDL_JoystickGetButton(joystick, 9);            //R3
 
-      states[17] = 1; //input mode
+      states[17] = 3; //input mode
 
   }
+*/
 
-  else if(SDL_JoystickNumAxes(joystick) == 6)  //linux, xinput
+  else if(SDL_JoystickNumAxes(joystick) == 6)  //linux, X mode
   {
 
-      states[0] = SDL_JoystickGetAxis(joystick, 0)/256 + 128;               //LS left-right
-      states[1] = SDL_JoystickGetAxis(joystick, 1)/256 + 128;               //LS up-down
-      states[2] = SDL_JoystickGetAxis(joystick, 3)/256 + 128;               //RS left-right
-      states[3] = SDL_JoystickGetAxis(joystick, 4)/256 + 128;               //RS up-down
+      states[0] = SDL_JoystickGetAxis(joystick, 0)/128;               //LS left-right
+      states[1] = SDL_JoystickGetAxis(joystick, 1)/128;               //LS up-down
+      states[2] = SDL_JoystickGetAxis(joystick, 3)/128;               //RS left-right
+      states[3] = SDL_JoystickGetAxis(joystick, 4)/128;               //RS up-down
 
       if(SDL_JoystickGetAxis(joystick, 2) - SDL_JoystickGetAxis(joystick, 5) > 0)
       {
