@@ -9,14 +9,9 @@
 class Controller{
     private:
         SDL_Joystick* joystick = nullptr;
-        Uint8* states = nullptr; //18 elements
-        void updateStates();
 
     public:
-        Controller();
-        ~Controller();
-        Uint8* getStates();
-        std::string toString();
+        void getStates(int*);
         void setJoystick(SDL_Joystick*);
 };
 

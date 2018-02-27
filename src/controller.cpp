@@ -4,18 +4,9 @@
 #include "controller.h"
 using namespace std;
 
-Controller::Controller(){
-    //array to hold controller states, fill with 0s
-    states = new Uint8[18];
-    for(int i=0;i<18;i++){states[i]=0;}
-}
-
-Controller::~Controller(){
-    delete[] states;
-}
-
 //update states array to current controller state
-void Controller::updateStates(){
+void Controller::getStates(int* states){
+
   SDL_JoystickUpdate();
 
   if(joystick == nullptr)
@@ -24,7 +15,7 @@ void Controller::updateStates(){
   if(SDL_JoystickNumAxes(joystick) == 4) //directx, either os
   {
 
-      states[0] = SDL_JoystickGetAxis(joystick, 0)/256 + 128;               //LS left-right
+      states[0] = SDL_JoystickGetAxis(joystick, 0)/128 + 128;               //LS left-right
       states[1] = SDL_JoystickGetAxis(joystick, 1)/256 + 128;               //LS up-down
       states[2] = SDL_JoystickGetAxis(joystick, 2)/256 + 128;               //RS left-right
       states[3] = SDL_JoystickGetAxis(joystick, 3)/256 + 128;               //RS up-down
@@ -129,22 +120,6 @@ void Controller::updateStates(){
       states[17] = 2; //input mode
   }
 
-}
-
-//return array with controller states
-Uint8* Controller::getStates(){
-    updateStates();
-    return states;
-}
-
-string Controller::toString(){
-    string s = "";
-    s += to_string(states[0]);
-    for(int i = 1; i<18; i++){
-        s += ' ';
-        s += to_string(states[i]);
-    }
-    return s;
 }
 
 void Controller::setJoystick(SDL_Joystick* j){
