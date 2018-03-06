@@ -78,6 +78,7 @@ void server() {
   int i=0;
   while(true) {
     previous = current;
+    current["rand"] = (i++ / 10) % 1000;
 
     robosub::Time::waitMillis(25);
 

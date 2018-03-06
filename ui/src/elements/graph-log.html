@@ -1,0 +1,129 @@
+<dom-module id="graph-log">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        --graph-log-color: rgb(33, 150, 243);
+        --graph-height: 400px;
+      }
+      .value {
+        font-family: "Roboto Mono";
+        font-size: 24px;
+        text-align: center;
+        padding: 6px;
+      }
+      div.graph {
+        background-color: var(--paper-grey-800);
+        color: white;
+      }
+      div.data {
+        height: var(--graph-height);
+        overflow-y: auto;
+        overflow-x: auto;
+      }
+      div.data p {
+        color: var(--paper-grey-200);
+        @apply --layout-horizontal;
+        @apply --layout-start-justified;
+        @apply --layout-start;
+        font-family: "Roboto Mono";
+        font-size: 14px;
+        margin-bottom: 4px;
+        margin-top: 0;
+      }
+      div.data p > span {
+        color: var(--paper-grey-500);
+        margin-right: 6px;
+        margin-left: 6px;
+      }
+      div.flex {
+        @apply --layout-horizontal;
+        @apply --layout-justified;
+        @apply --layout-center;
+        margin-bottom: 6px;
+      }
+      div.flex > h4 {
+        width: 100%;
+        text-align: center;
+        position: relative;
+        left: 46px;
+      }
+      div.flex > span {
+        display: block;
+        @apply --font-main;
+        font-size: 12px;
+        color: var(--paper-grey-400);
+        @apply --layout-horizontal;
+        @apply --layout-end-justified;
+        @apply --layout-center;
+        width: 110px;
+      }
+      paper-icon-button {
+        margin-right: 6px;
+        min-width: 40px;
+        padding: 10px;
+      }
+      paper-icon-button[scrolling] {
+        color: var(--paper-green-a400);
+      }
+    </style>
+
+    <div class="graph">
+      <div class="flex">
+        <h4>[[title]]</h4>
+        <span>Follow Log<paper-icon-button scrolling$="[[autoScroll]]" icon="mdi:checkbox-blank-circle" on-tap="_followLog"></paper-icon-button></span>
+      </div>
+      <div class="data" id="scroll">
+        <template is="dom-repeat" items="[[_valueCache]]" as="item">
+          <p><span class="timestamp">[[item.time]]</span>[[item.value]]</p>
+        </template>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    class GraphLog extends Polymer.Element {
+      static get is() { return 'graph-log'; }
+      static get properties() {
+        return {
+          title: String,
+          value: { type: String, value: "", observer: "_valueChanged" },
+          _valueCache: { type: Array, value: [ ] },
+          autoScroll: { type: Boolean, value: false }
+        }
+      }
+
+      _valueChanged(value) {
+        if (!value) return;
+        this.push("_valueCache", { time: moment().format("HH:mm:ss.SSS"), value: value });
+
+        setTimeout(() => {
+          if (this.autoScroll) {
+            var scroll = this.$.scroll;
+            scroll.scrollTop = scroll.scrollHeight;
+          }
+        }, 1);
+      }
+
+      _followLog() {
+        this.set("autoScroll", true);
+        var scroll = this.$.scroll;
+        scroll.scrollTop = scroll.scrollHeight;
+      }
+
+      ready() {
+        super.ready();
+        var scroll = this.$.scroll;
+        scroll.onscroll = (e) => {
+          if (scroll.scrollTop + 32 < scroll.scrollHeight - scroll.offsetHeight) {
+            this.set("autoScroll", false);
+          } else {
+            this.set("autoScroll", true);
+          }
+        };
+      }
+    }
+
+    window.customElements.define(GraphLog.is, GraphLog);
+  </script>
+</dom-module>
