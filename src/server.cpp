@@ -50,7 +50,7 @@ void server() {
     //Display message received
     auto message_str = message->string();
     cout << "Server: Message received: " << message_str;
-    if(message_str == "refresh-controllers")
+    if(message_str == "reset-controllers")
         refresh = true;
   };
   //GET "/": on close
