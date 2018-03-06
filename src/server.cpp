@@ -239,7 +239,7 @@ void server() {
     }
 
 
-    //cout << current << endl;
+    cout << current << endl;
 
     //send update to all active connections
     for(auto &connection : server.get_connections())

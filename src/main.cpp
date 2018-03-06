@@ -1,12 +1,12 @@
 #include <SDL/SDL.h>
 #include <iostream>
 #include <thread>
-#include <librobosub/robosub.h>
+//#include <librobosub/robosub.h>
 #include "controller.h"
 #include "main.h"
 
 using namespace std;
-using namespace robosub;
+//using namespace robosub;
 
 void control();
 void video(int);
@@ -55,26 +55,10 @@ void control(){
     controller2.setJoystick(SDL_JoystickOpen(1));
 
 
-    int cur = robosub::Time::millis();
-    int prev = cur, i=0;
-
     SDL_Event event;
     //main loop
     while(running){
 
-    prev = cur;
-    cur = robosub::Time::millis();
-
-    cout << cur-prev << endl;
-/*
-    if(cur == prev)
-        i++;
-    else{
-        cout << i << endl;
-        i = 0;
-    }
-
-*/
 
         //event loop
         SDL_PumpEvents();
@@ -84,15 +68,11 @@ void control(){
         }
 
 
-
-        i++;
-        if(i==10000){
-        i =0;
-        
-        SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
-        SDL_InitSubSystem(SDL_INIT_JOYSTICK);
-        controller1.setJoystick(SDL_JoystickOpen(0));
-        controller2.setJoystick(SDL_JoystickOpen(1));
+        if(false){ //put refresh condition here
+            SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+            SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+            controller1.setJoystick(SDL_JoystickOpen(0));
+            controller2.setJoystick(SDL_JoystickOpen(1));
         }
 
         controller1.getStates(&controllerData[0]);

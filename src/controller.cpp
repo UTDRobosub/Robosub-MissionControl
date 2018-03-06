@@ -9,8 +9,10 @@ void Controller::getStates(int* states){
 
   SDL_JoystickUpdate();
 
-  if(joystick == nullptr)
+  if(joystick == nullptr){
+    states[17] = 0;
     return;
+  }
 
   if(SDL_JoystickNumAxes(joystick) == 4) //D mode, either os
   {
