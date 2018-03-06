@@ -232,7 +232,6 @@ void server() {
             break;
     }
 
-
     cout << current << endl;
 
     //send update to all active connections
@@ -244,8 +243,6 @@ void server() {
 
       //skip if no changes
       if (compressed.toJson().empty()) continue;
-
-      cout << "Data sent" << endl;
 
       current["time"] = milliseconds_since_epoch;
       compressed = current.compress(previousState);
