@@ -91,17 +91,6 @@
         // var imageRatio = 501 / 771; //height/width
         var scale = 300 / 501; //display / original
 
-        //get color
-        var color;
-        var disabledColor;
-        if (ShadyCSS) {
-          color = ShadyCSS.getComputedStyleValue(this, '--graph-controller-color');
-          disabledColor = ShadyCSS.getComputedStyleValue(this, '--graph-controller-disabled-color');
-        } else {
-          color = getComputedStyle(this).getPropertyValue('--graph-controller-color');
-          disabledColor = getComputedStyle(this).getPropertyValue('--graph-controller-disabled-color');
-        }
-
         svg.select("g").remove();
 
         if (!this.data) {
@@ -111,106 +100,15 @@
         var g = svg.append("g");
 
         //render buttons
-        const leftDpad = [
-          [151, 153],
-          [132, 135],
-          [109, 135],
-          [102, 141],
-          [101, 153],
-          [102, 168],
-          [110, 172],
-          [134, 171],
-          [151, 153]
-        ];
-        const start = [
-          [302, 126],
-          [292, 136],
-          [302, 148],
-          [324, 148],
-          [336, 136],
-          [324, 126],
-          [302, 126]
-        ];
-        const lt = [
-          [242, 57],
-          [242, 36],
-          [242, 17],
-          [265, 20],
-          [274, 25],
-          [283, 35],
-          [288, 57],
-          [250, 57],
-          [242, 57]
-        ];
-        const rt = [
-          [521, 57],
-          [521, 36],
-          [521, 17],
-          [501, 19],
-          [489, 25],
-          [480, 35],
-          [476, 57],
-          [489, 57],
-          [507, 57],
-          [521, 57]
-        ];
-        const lb = [
-          [162, 38],
-          [179, 38],
-          [193, 40],
-          [202, 41],
-          [207, 42],
-          [208, 40],
-          [206, 36],
-          [187, 30],
-          [175, 28],
-          [162, 28],
-          [148, 28],
-          [139, 30],
-          [129, 34],
-          [123, 37],
-          [120, 39],
-          [120, 41],
-          [122, 44],
-          [142, 39],
-          [162, 38]
-        ];
-        const rb = this._affine(lb, [0, 0], 0, [440, 0]);
-        const select = this._affine(start, [ 0, 0 ], 0, [ 143, 0 ])
-        const upDpad = this._affine(leftDpad, [ 160, 152 ], -90, [ 0, 0 ]);
-        const downDpad = this._affine(leftDpad, [ 160, 152 ], 90, [ 0, 0 ]);
-        const rightDpad = this._affine(leftDpad, [ 160, 152 ], 180, [ 0, 0 ]);
-        const buttonConfig = {
-          a: { t: "c", c: [ 612, 203 ], r: 26 },
-          b: { t: "c", c: [ 665, 151 ], r: 26 },
-          x: { t: "c", c: [ 558, 151 ], r: 26 },
-          y: { t: "c", c: [ 610, 98  ], r: 26 },
-          left: { t: "p", d: leftDpad },
-          up: { t: "p", d: upDpad },
-          down: { t: "p", d: downDpad },
-          right: { t: "p", d: rightDpad },
-          start: { t: "p", d: start },
-          select: { t: "p", d: select },
-          lt: { t: "p", d: lt },
-          rt: { t: "p", d: rt },
-          lb: { t: "p", d: lb },
-          rb: { t: "p", d: rb }
-        };
-        const joyConfig = {
-          l: { c: [ 272, 256 ], r: 40 },
-          r: { c: [ 502, 256 ], r: 40 },
-        };
-
-        //render buttons
-        Object.keys(buttonConfig).forEach((key) => {
+        Object.keys(this._buttonConfig).forEach((key) => {
           if (this.data[key] != 1) return;
 
-          var btn = buttonConfig[key];
+          var btn = this._buttonConfig[key];
 
           if (btn.t == "c") {
             //draw as circle
             g.append("circle")
-            .style("fill", color)
+            .style("fill", this._color)
             .attr("r", btn.r * scale)
             .attr("cx", btn.c[0] * scale)
             .attr("cy", btn.c[1] * scale);
@@ -227,22 +125,22 @@
 
             g.append("path")
             .attr("d", line(btn.d))
-            .attr("fill", color);
+            .attr("fill", this._color);
           }
         });
 
         //render joysticks
-        var lx = this.data.lx / 255.0 * joyConfig.l.r + joyConfig.l.c[0];
-        var ly = this.data.ly / 255.0 * joyConfig.l.r + joyConfig.l.c[1];
-        var rx = this.data.rx / 255.0 * joyConfig.r.r + joyConfig.r.c[0];
-        var ry = this.data.ry / 255.0 * joyConfig.r.r + joyConfig.r.c[1];
-        var colorLeft = color;
-        var colorRight = color;
+        var lx = this.data.lx / 255.0 * this._joyConfig.l.r + this._joyConfig.l.c[0];
+        var ly = this.data.ly / 255.0 * this._joyConfig.l.r + this._joyConfig.l.c[1];
+        var rx = this.data.rx / 255.0 * this._joyConfig.r.r + this._joyConfig.r.c[0];
+        var ry = this.data.ry / 255.0 * this._joyConfig.r.r + this._joyConfig.r.c[1];
+        var colorLeft = this._color;
+        var colorRight = this._color;
         if (Math.sqrt((this.data.lx*this.data.lx) + (this.data.ly*this.data.ly)) < this.deadband) {
-          colorLeft = disabledColor;
+          colorLeft = this._disabledColor;
         }
         if (Math.sqrt((this.data.rx*this.data.rx) + (this.data.ry*this.data.ry)) < this.deadband) {
-          colorRight = disabledColor;
+          colorRight = this._disabledColor;
         }
         g.append("circle")
         .style("fill", colorLeft)
@@ -264,6 +162,110 @@
         .attr('width', (771 / 501) * 300)
         .attr('height', 300)
         .attr("xlink:href", "../img/controller.png");
+
+        //get colors
+        if (ShadyCSS) {
+          this._color = ShadyCSS.getComputedStyleValue(this, '--graph-controller-color');
+          this._disabledColor = ShadyCSS.getComputedStyleValue(this, '--graph-controller-disabled-color');
+        } else {
+          this._color = getComputedStyle(this).getPropertyValue('--graph-controller-color');
+          this._disabledColor = getComputedStyle(this).getPropertyValue('--graph-controller-disabled-color');
+        }
+      }
+
+      constructor() {
+        super();
+
+        //render buttons
+        this._leftDpad = [
+          [151, 153],
+          [132, 135],
+          [109, 135],
+          [102, 141],
+          [101, 153],
+          [102, 168],
+          [110, 172],
+          [134, 171],
+          [151, 153]
+        ];
+        this._select = [
+          [302, 126],
+          [292, 136],
+          [302, 148],
+          [324, 148],
+          [336, 136],
+          [324, 126],
+          [302, 126]
+        ];
+        this._lt = [
+          [242, 57],
+          [242, 36],
+          [242, 17],
+          [265, 20],
+          [274, 25],
+          [283, 35],
+          [288, 57],
+          [250, 57],
+          [242, 57]
+        ];
+        this._rt = [
+          [521, 57],
+          [521, 36],
+          [521, 17],
+          [501, 19],
+          [489, 25],
+          [480, 35],
+          [476, 57],
+          [489, 57],
+          [507, 57],
+          [521, 57]
+        ];
+        this._lb = [
+          [162, 38],
+          [179, 38],
+          [193, 40],
+          [202, 41],
+          [207, 42],
+          [208, 40],
+          [206, 36],
+          [187, 30],
+          [175, 28],
+          [162, 28],
+          [148, 28],
+          [139, 30],
+          [129, 34],
+          [123, 37],
+          [120, 39],
+          [120, 41],
+          [122, 44],
+          [142, 39],
+          [162, 38]
+        ];
+        this._rb = this._affine(this._lb, [0, 0], 0, [440, 0]);
+        this._start = this._affine(this._select, [ 0, 0 ], 0, [ 143, 0 ])
+        this._upDpad = this._affine(this._leftDpad, [ 160, 152 ], -90, [ 0, 0 ]);
+        this._downDpad = this._affine(this._leftDpad, [ 160, 152 ], 90, [ 0, 0 ]);
+        this._rightDpad = this._affine(this._leftDpad, [ 160, 152 ], 180, [ 0, 0 ]);
+        this._buttonConfig = {
+          a: { t: "c", c: [ 612, 203 ], r: 26 },
+          b: { t: "c", c: [ 665, 151 ], r: 26 },
+          x: { t: "c", c: [ 558, 151 ], r: 26 },
+          y: { t: "c", c: [ 610, 98  ], r: 26 },
+          left: { t: "p", d: this._leftDpad },
+          up: { t: "p", d: this._upDpad },
+          down: { t: "p", d: this._downDpad },
+          right: { t: "p", d: this._rightDpad },
+          start: { t: "p", d: this._start },
+          select: { t: "p", d: this._select },
+          lt: { t: "p", d: this._lt },
+          rt: { t: "p", d: this._rt },
+          lb: { t: "p", d: this._lb },
+          rb: { t: "p", d: this._rb }
+        };
+        this._joyConfig = {
+          l: { c: [ 272, 256 ], r: 40 },
+          r: { c: [ 502, 256 ], r: 40 },
+        };
       }
     }
 

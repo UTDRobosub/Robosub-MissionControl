@@ -177,7 +177,7 @@
           state.latency = moment().valueOf() - state.time;
           //console.log(state);
 
-          if (state.latency > 30) {
+          if (state.latency > 100) {
             self.set("status", "High latency");
           } else {
             self.set("status", "Connected");
