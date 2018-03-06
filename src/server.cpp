@@ -123,14 +123,14 @@ void server() {
 
     switch(controllerData[17]){
         case 1:
-            current["controller1"]["mode"] = "d";
+            current["controller1"]["mode"] = "D";
             current["controller1"]["lt"] = controllerData[4];
             current["controller1"]["rt"] = controllerData[5];
             current["controller1"]["connected"] = 1;
             break;
         case 2:
             current["controller1"]["connected"] = 1;
-            current["controller1"]["mode"] = "x";
+            current["controller1"]["mode"] = "X";
             current["controller1"]["t"] = controllerData[5]-controllerData[4];
             if(controllerData[5]-controllerData[4] > 2){
                 current["controller1"]["lt"] = 0;
@@ -147,6 +147,7 @@ void server() {
             break;
         default:
             current["controller1"]["connected"] = 0;
+            current["controller1"]["mode"] = "?";
             break;
     }
 
@@ -188,13 +189,13 @@ void server() {
 
     switch(controllerData[35]){
         case 1:
-            current["controller2"]["mode"] = "d";
+            current["controller2"]["mode"] = "D";
             current["controller2"]["lt"] = controllerData[22];
             current["controller2"]["rt"] = controllerData[23];
             current["controller2"]["connected"] = 1;
             break;
         case 2:
-            current["controller2"]["mode"] = "x";
+            current["controller2"]["mode"] = "X";
             current["controller2"]["t"] = controllerData[23]-controllerData[22];
             current["controller2"]["connected"] = 1;
             if(controllerData[23]-controllerData[22] > 2){
@@ -212,6 +213,7 @@ void server() {
             break;
         default:
             current["controller2"]["connected"] = 0;
+            current["controller2"]["mode"] = "?";
             break;
     }
 
