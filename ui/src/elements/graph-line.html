@@ -60,7 +60,7 @@
       _autoRefresh() {
         setInterval(() => {
           if (!this.autoRefresh) return;
-          this._dataChanged(this.data)
+          this._dataChanged(this.data);
         }, this.autoRefresh);
       }
 
@@ -78,6 +78,9 @@
         .nice(1);
 
         svg.select("g").remove();
+
+        if (data && data[this.xKey] && data[this.yKey])
+          this.push("_dataCache", data);
 
         var color;
         if (ShadyCSS) {
@@ -97,22 +100,6 @@
           .y1((d) => { return y(d[this.yKey]); })
           .y0(y(0))
           .curve(d3.curveMonotoneX);
-
-          // var areaGradient = svg.append("defs").append("linearGradient")
-          // .attr("id", "areagrad")//id of the gradient
-          // .attr("x1", "0%")
-          // .attr("x2", "0%")
-          // .attr("y1", "0%")
-          // .attr("y2", "100%");//since its a vertical linear gradient
-          // areaGradient.append("stop")
-          // .attr("offset", "0%")
-          // .style("stop-color", "red")//end in red
-          // .style("stop-opacity", 1)
-          //
-          // areaGradient.append("stop")
-          // .attr("offset", "100%")
-          // .style("stop-color", "blue")//start in blue
-          // .style("stop-opacity", 1)
 
         while (this._dataCache.length > 0 &&  !moment(this._dataCache[0].time).isAfter(moment().subtract(this.xSeconds, 'seconds'))) {
           this.shift("_dataCache");
@@ -141,7 +128,7 @@
             .attr("dy", "0.71em")
             .attr("text-anchor", "end")
             .text(this.yLabel);
-            
+
         if (!data || !data[this.xKey] || !data[this.yKey]) return;
 
         g.append("path")
