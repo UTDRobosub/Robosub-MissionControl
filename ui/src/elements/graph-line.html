@@ -65,17 +65,6 @@
       }
 
       _dataChanged(data) {
-        if (this.averageOver > 0) {
-          //compute average over interval instead
-
-
-        }
-
-        if (data && data[this.xKey] && data[this.yKey]) {
-          this.push("_dataCache", data);
-        }
-
-
         var svg = d3.select(this.$.svg);
 
         var margin = {top: 20, right: 20, bottom: 30, left: 50},
@@ -152,6 +141,8 @@
             .attr("dy", "0.71em")
             .attr("text-anchor", "end")
             .text(this.yLabel);
+            
+        if (!data || !data[this.xKey] || !data[this.yKey]) return;
 
         g.append("path")
           .datum(this.get("_dataCache"))

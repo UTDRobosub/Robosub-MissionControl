@@ -96,16 +96,11 @@ void server() {
   while(true) {
     previous = current;
 
-    robosub::Time::waitMillis(100);
+    robosub::Time::waitMillis(25);
 
     unsigned long milliseconds_since_epoch =
     std::chrono::system_clock::now().time_since_epoch() /
     std::chrono::milliseconds(1);
-
-    current["rand"] = rand() % 100;
-    current["index"] = i++ % 1000;
-    current["time"] = milliseconds_since_epoch;
-
 
     current["controller1"] = { };
     current["controller1"]["lx"] = controllerData[0];
@@ -130,7 +125,6 @@ void server() {
         current["controller1"]["left"] = 1;
     else
         current["controller1"]["left"] = 0;
-
 
 
     current["controller1"]["a"] = controllerData[7];
@@ -250,6 +244,11 @@ void server() {
 
       //skip if no changes
       if (compressed.toJson().empty()) continue;
+
+      cout << "Data sent" << endl;
+
+      current["time"] = milliseconds_since_epoch;
+      compressed = current.compress(previousState);
 
       //set new connection state (assume received)
       connectionState[connection] = current;
