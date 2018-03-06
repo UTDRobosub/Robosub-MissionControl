@@ -1,12 +1,12 @@
 #include <SDL/SDL.h>
 #include <iostream>
 #include <thread>
-#include <librobosub/robosub.h>
+//#include <librobosub/robosub.h>
 #include "controller.h"
 #include "main.h"
 
 using namespace std;
-using namespace robosub;
+//using namespace robosub;
 
 void control();
 void video(int);
@@ -58,27 +58,21 @@ void control(){
     SDL_Event event;
     //main loop
     while(running){
+
+
         //event loop
         SDL_PumpEvents();
         while( SDL_PollEvent( &event ) != 0 ) {
             if( event.type == SDL_QUIT )
                 running = false;
-
-            /*
-            else if( event.type == SDL_KEYDOWN ) {
-                if(event.key.keysym.sym == SDLK_ESCAPE)
-                    running = false;
-                //if r is pressed, restart joystick subsystem
-                else if(event.key.keysym.sym == SDLK_r){
-                    SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
-                    SDL_InitSubSystem(SDL_INIT_JOYSTICK);
-                    controller1.setJoystick(SDL_JoystickOpen(0));
-                    controller2.setJoystick(SDL_JoystickOpen(1));
-                }
-            }
-            */
+        }
 
 
+        if(false){ //put refresh condition here
+            SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+            SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+            controller1.setJoystick(SDL_JoystickOpen(0));
+            controller2.setJoystick(SDL_JoystickOpen(1));
         }
 
         controller1.getStates(&controllerData[0]);

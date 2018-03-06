@@ -251,7 +251,7 @@ void server() {
       connectionState[connection] = current;
 
       //check if better to send as compressed or uncompressed
-      cout << current.toString().length() << " " << compressed.toString().length() << endl;
+      //cout << current.toString().length() << " " << compressed.toString().length() << endl;
       if (current.toString().length() < compressed.toString().length())
       {
         //better to send uncompressed
