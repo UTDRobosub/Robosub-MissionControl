@@ -55,30 +55,44 @@ void control(){
     controller2.setJoystick(SDL_JoystickOpen(1));
 
 
+    int cur = robosub::Time::millis();
+    int prev = cur, i=0;
+
     SDL_Event event;
     //main loop
     while(running){
+
+    prev = cur;
+    cur = robosub::Time::millis();
+
+    cout << cur-prev << endl;
+/*
+    if(cur == prev)
+        i++;
+    else{
+        cout << i << endl;
+        i = 0;
+    }
+
+*/
+
         //event loop
         SDL_PumpEvents();
         while( SDL_PollEvent( &event ) != 0 ) {
             if( event.type == SDL_QUIT )
                 running = false;
-
-            /*
-            else if( event.type == SDL_KEYDOWN ) {
-                if(event.key.keysym.sym == SDLK_ESCAPE)
-                    running = false;
-                //if r is pressed, restart joystick subsystem
-                else if(event.key.keysym.sym == SDLK_r){
-                    SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
-                    SDL_InitSubSystem(SDL_INIT_JOYSTICK);
-                    controller1.setJoystick(SDL_JoystickOpen(0));
-                    controller2.setJoystick(SDL_JoystickOpen(1));
-                }
-            }
-            */
+        }
 
 
+
+        i++;
+        if(i==10000){
+        i =0;
+        
+        SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+        SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+        controller1.setJoystick(SDL_JoystickOpen(0));
+        controller2.setJoystick(SDL_JoystickOpen(1));
         }
 
         controller1.getStates(&controllerData[0]);
