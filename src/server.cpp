@@ -112,23 +112,23 @@ void server() {
     current["controller1"]["ly"] = controllerData[1];
     current["controller1"]["rx"] = controllerData[2];
     current["controller1"]["ry"] = controllerData[3];
-    
+
     //current["controller1"]["dpad"] = controllerData[6];
     if(controllerData[6] == 1 || controllerData[6] == 3 || controllerData[6] == 9)
         current["controller1"]["up"] = 1;
-    else 
+    else
         current["controller1"]["up"] = 0;
     if(controllerData[6] == 2 || controllerData[6] == 3 || controllerData[6] == 6)
         current["controller1"]["right"] = 1;
-    else 
+    else
         current["controller1"]["right"] = 0;
     if(controllerData[6] == 4 || controllerData[6] == 6 || controllerData[6] == 12)
         current["controller1"]["down"] = 1;
-    else 
+    else
         current["controller1"]["down"] = 0;
     if(controllerData[6] == 8 || controllerData[6] == 12 || controllerData[6] == 9)
         current["controller1"]["left"] = 1;
-    else 
+    else
         current["controller1"]["left"] = 0;
 
 
@@ -178,23 +178,23 @@ void server() {
     current["controller2"]["ly"] = controllerData[19];
     current["controller2"]["rx"] = controllerData[20];
     current["controller2"]["ry"] = controllerData[21];
-    
+
     //current["controller2"]["dpad"] = controllerData[24];
     if(controllerData[24] == 1 || controllerData[24] == 3 || controllerData[24] == 9)
         current["controller2"]["up"] = 1;
-    else 
+    else
         current["controller2"]["up"] = 0;
     if(controllerData[24] == 2 || controllerData[24] == 3 || controllerData[24] == 6)
         current["controller2"]["right"] = 1;
-    else 
+    else
         current["controller2"]["right"] = 0;
     if(controllerData[24] == 4 || controllerData[24] == 6 || controllerData[24] == 12)
         current["controller2"]["down"] = 1;
-    else 
+    else
         current["controller2"]["down"] = 0;
     if(controllerData[24] == 8 || controllerData[24] == 12 || controllerData[24] == 9)
         current["controller2"]["left"] = 1;
-    else 
+    else
         current["controller2"]["left"] = 0;
 
 
@@ -255,11 +255,12 @@ void server() {
       connectionState[connection] = current;
 
       //check if better to send as compressed or uncompressed
+      cout << current.toString().length() << " " << compressed.toString().length() << endl;
       if (current.toString().length() < compressed.toString().length())
       {
         //better to send uncompressed
         auto send_stream = make_shared<WsServer::SendStream>();
-        *send_stream << compressed;
+        *send_stream << current;
         connection->send(send_stream);
       } else {
         //send compressed

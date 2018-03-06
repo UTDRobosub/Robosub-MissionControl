@@ -58,37 +58,7 @@
         return {
           title: String,
           deadband: { type: Number, value: 10 },
-          data: { type: Object, observer: "_dataChanged", value: {
-            connected: 0,
-            mode: "x", //or d
-            a: 0,
-            b: 0,
-            x: 0,
-            y: 0,
-            start: 0,
-            select: 0,
-            //bumpers
-            lb: 0,
-            rb: 0,
-            //trigger (single float - combined mode)
-            t: 0, //-255 to 255
-            //trigger (two buttons)
-            lt: 0,
-            rt: 0,
-            //joystick buttons
-            ldown: 0,
-            rdown: 0,
-            //joysticks (-255 to 255)
-            lx: 0,
-            ly: 0,
-            rx: 0,
-            ry: 0,
-            //dpad
-            left: 0,
-            right: 0,
-            up: 0,
-            down: 0
-          }}
+          data: { type: Object, observer: "_dataChanged", value: { connected: 0 }},
         }
       }
 
@@ -132,15 +102,12 @@
           disabledColor = getComputedStyle(this).getPropertyValue('--graph-controller-disabled-color');
         }
 
-        //controller image
-        svg.append("svg:image")
-        .attr('width', (771 / 501) * 300)
-        .attr('height', 300)
-        .attr("xlink:href", "../img/controller.png");
-
         svg.select("g").remove();
 
-        if (!this.data) return;
+        if (!this.data) {
+          this.set("data.connected", 0);
+          return;
+        }
         var g = svg.append("g");
 
         //render buttons
@@ -291,6 +258,12 @@
 
       ready() {
         super.ready();
+
+        var svg = d3.select(this.$.svg);
+        svg.append("svg:image")
+        .attr('width', (771 / 501) * 300)
+        .attr('height', 300)
+        .attr("xlink:href", "../img/controller.png");
       }
     }
 

@@ -16,13 +16,13 @@ bool running = true;
 int controllerData[36];
 
 int main(int argc, char* argv[]){
-    
+
 
     int videoPort;
     //cout << "Video port: ";
     //cin >> videoPort;
     videoPort = 12345;
-    
+
 
     thread controlThread(control);
     //thread videoThread(video,videoPort);
@@ -58,8 +58,6 @@ void control(){
     SDL_Event event;
     //main loop
     while(running){
-
-        robosub::Time::waitMillis(1000);
         //event loop
         SDL_PumpEvents();
         while( SDL_PollEvent( &event ) != 0 ) {
