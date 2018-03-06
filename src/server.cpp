@@ -4,30 +4,11 @@ using namespace robosub;
 using WsServer = robosub::ws::SocketServer<robosub::ws::WS>;
 
 #include <stdio.h>
-#include <sys/ioctl.h> // For FIONREAD
-#include <termios.h>
+//#include <sys/ioctl.h> // For FIONREAD
+//#include <termios.h>
 #include <stdbool.h>
 #include <stdlib.h> //rand
 #include "main.h"
-
-int kbhit(void) {
-    static bool initflag = false;
-    static const int STDIN = 0;
-
-    if (!initflag) {
-        // Use termios to turn off line buffering
-        struct termios term;
-        tcgetattr(STDIN, &term);
-        term.c_lflag &= ~ICANON;
-        tcsetattr(STDIN, TCSANOW, &term);
-        setbuf(stdin, NULL);
-        initflag = true;
-    }
-
-    int nbbytes;
-    ioctl(STDIN, FIONREAD, &nbbytes);  // 0 is STDIN
-    return nbbytes;
-}
 
 void server() {
   //prepare buckets to store data
@@ -69,6 +50,8 @@ void server() {
     //Display message received
     auto message_str = message->string();
     cout << "Server: Message received: " << message_str;
+    if(message_str == "refresh-controllers")
+        refresh = true;
   };
   //GET "/": on close
   root.on_close = [&connectionState](shared_ptr<WsServer::Connection> connection, int status, const string & /*reason*/) {

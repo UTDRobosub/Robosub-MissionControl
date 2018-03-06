@@ -13,6 +13,7 @@ void video(int);
 void server();
 
 bool running = true;
+bool refresh = false;
 int controllerData[36];
 
 int main(int argc, char* argv[]){
@@ -68,7 +69,8 @@ void control(){
         }
 
 
-        if(false){ //put refresh condition here
+        if(refresh){ 
+            refresh = false;
             SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
             SDL_InitSubSystem(SDL_INIT_JOYSTICK);
             controller1.setJoystick(SDL_JoystickOpen(0));
