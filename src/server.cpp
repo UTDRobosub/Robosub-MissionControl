@@ -265,7 +265,7 @@ void server() {
       } else {
         //send compressed
         auto send_stream = make_shared<WsServer::SendStream>();
-        *send_stream << current;
+        *send_stream << compressed;
         connection->send(send_stream);
       }
 
