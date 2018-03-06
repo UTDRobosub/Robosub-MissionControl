@@ -147,7 +147,7 @@ void server() {
             break;
         default:
             current["controller1"]["connected"] = 0;
-            current["controller1"]["mode"] = "?";
+            current["controller1"]["mode"] = "";
             break;
     }
 
@@ -213,7 +213,7 @@ void server() {
             break;
         default:
             current["controller2"]["connected"] = 0;
-            current["controller2"]["mode"] = "?";
+            current["controller2"]["mode"] = "";
             break;
     }
 
