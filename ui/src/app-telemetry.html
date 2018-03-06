@@ -4,6 +4,7 @@
 <link rel="import" href="../lib/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../lib/iron-grid/iron-grid.html">
 <link rel="import" href="../lib/paper-button/paper-button.html">
+<link rel="import" href="../lib/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../lib/paper-styles/paper-styles.html">
 
 <link rel="import" href="shared-styles.html">
@@ -12,6 +13,7 @@
 <link rel="import" href="elements/graph-controller.html">
 <link rel="import" href="elements/graph-line.html">
 <link rel="import" href="elements/graph-value.html">
+<link rel="import" href="elements/mdi.html">
 
 <dom-module id="app-telemetry">
   <template>
@@ -83,7 +85,7 @@
       <br>
 
       <graph-value style="width: 250px;display:inline-block;margin-right:8px;" title="Robot Time" value="[[_getTime(data.time)]]"></graph-value>
-      <graph-value style="width: 200px;display:inline-block;margin-right:8px;" title="System Time" value="[[currentTime]]"></graph-value>
+      <graph-value style="width: 250px;display:inline-block;margin-right:8px;" title="System Time" value="[[currentTime]]"></graph-value>
       <graph-value style="width: 120px;display:inline-block" title="Latency" value="[[data.latency]] ms"></graph-value>
 
       <iron-grid>
@@ -168,14 +170,22 @@
 
         this.initializeWebsockets();
         this._autoRefresh();
+
+        this.addEventListener('send-ws-message', e => { this._sendMessage(e.detail) })
+      }
+
+      _sendMessage(msg) {
+        if (!this.ws) return;
+        this.ws.send(msg);
+        console.log("Sent:", msg);
       }
 
       initializeWebsockets() {
         var self = this;
 
         //connect to websocket and begin receiving data
-        ws = new WebSocket("ws://localhost:8080/");
-        ws.onmessage = (evt) => {
+        this.ws = new WebSocket("ws://localhost:8080/");
+        this.ws.onmessage = (evt) => {
           var data = JSON.parse(evt.data);
           var state = JSON.parse(JSON.stringify(this.data));
 
@@ -205,11 +215,11 @@
           this.set("status", "Connected");
           this.set("data", state);
         };
-        ws.onopen = (evt) => {
+        this.ws.onopen = (evt) => {
           // ws.send("hello");
           this.set("status", "Connected");
         }
-        ws.onclose = function (event) {
+        this.ws.onclose = function (event) {
           console.error("Connection lost due to error", event.code);
           self.set("status", "Connection lost");
 

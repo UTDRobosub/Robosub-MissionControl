@@ -9,7 +9,9 @@
     "jquery": "^3.3.1",
     "paper-styles": "PolymerElements/paper-styles#^2.1.0",
     "iron-grid": "*",
-    "iron-flex-layout": "PolymerElements/iron-flex-layout#^2.0.3"
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#^2.0.3",
+    "paper-icon-button": "PolymerElements/paper-icon-button#^2.1.0",
+    "iron-iconset-svg": "PolymerElements/iron-iconset-svg#^2.2.0"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^6.0.0",

@@ -21,8 +21,16 @@
       }
       div.flex {
         @apply --layout-horizontal;
+        @apply --layout-justified;
+        @apply --layout-center;
+      }
+      div.flex-inside {
+        @apply --layout-horizontal;
         @apply --layout-center-justified;
         @apply --layout-center;
+        width: 100%;
+        position: relative;
+        left: 18px;
       }
       div.live {
         background-color: var(--paper-green-600);
@@ -40,10 +48,13 @@
 
     <div class="graph">
       <div class="flex">
-        <h4>[[title]]</h4>
-        <div class="live" disconnected$=[[!data.connected]]>
-          [[_getConnectedText(data.connected)]]
+        <div class="flex-inside">
+          <h4>[[title]]</h4>
+          <div class="live" disconnected$=[[!data.connected]]>
+            [[_getConnectedText(data.connected)]]
+          </div>
         </div>
+        <paper-icon-button icon="mdi:refresh" on-tap="_refreshControllers"></paper-icon-button>
       </div>
       <div class="controller">
         <svg id="svg"></svg>
@@ -60,6 +71,10 @@
           deadband: { type: Number, value: 10 },
           data: { type: Object, observer: "_dataChanged", value: { connected: 0 }},
         }
+      }
+
+      _refreshControllers() {
+        this.dispatchEvent(new CustomEvent("send-ws-message", {detail: "reset-controllers", bubbles: true, composed: true}));
       }
 
       _getConnectedText(connected) {
