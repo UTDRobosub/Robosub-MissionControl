@@ -139,6 +139,37 @@
         }, 50);
       }
 
+      _assign(obj, prop, value) {
+        if (typeof prop === "string")
+          prop = prop.split(".");
+
+        if (prop.length > 1) {
+          var e = prop.shift();
+          this._assign(obj[e] =
+               Object.prototype.toString.call(obj[e]) === "[object Object]"
+               ? obj[e]
+               : {},
+             prop,
+             value);
+        } else
+            obj[prop[0]] = value;
+      }
+
+      _delete(obj, prop) {
+        if (typeof prop === "string")
+          prop = prop.split(".");
+
+        if (prop.length > 1) {
+          var e = prop.shift();
+          this._delete(obj[e] =
+               Object.prototype.toString.call(obj[e]) === "[object Object]"
+               ? obj[e]
+               : {},
+             prop);
+        } else
+            delete obj[prop[0]];
+      }
+
       ready() {
         super.ready();
 
@@ -164,9 +195,9 @@
 
               if (op === "add" || op === "replace") {
                 var value = data[i].value;
-                state[path] = value;
+                this._assign(state, path, value);
               } else if (op === "remove") {
-                delete state[path];
+                this._assign(state, path);
               }
             }
           } else {
@@ -175,9 +206,8 @@
           }
 
           state.latency = moment().valueOf() - state.time;
-          //console.log(state);
 
-          if (state.latency > 30) {
+          if (state.latency > 100) {
             self.set("status", "High latency");
           } else {
             self.set("status", "Connected");
