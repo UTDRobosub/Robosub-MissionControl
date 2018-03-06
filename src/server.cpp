@@ -102,9 +102,9 @@ void server() {
     std::chrono::system_clock::now().time_since_epoch() /
     std::chrono::milliseconds(1);
 
-    //current["rand"] = rand() % 100;
-    //current["index"] = i++ % 1000;
-    //current["time"] = milliseconds_since_epoch;
+    current["rand"] = rand() % 100;
+    current["index"] = i++ % 1000;
+    current["time"] = milliseconds_since_epoch;
 
 
     current["controller1"] = { };
@@ -113,7 +113,26 @@ void server() {
     current["controller1"]["rx"] = controllerData[2];
     current["controller1"]["ry"] = controllerData[3];
     
-    current["controller1"]["dpad"] = controllerData[6];
+    //current["controller1"]["dpad"] = controllerData[6];
+    if(controllerData[6] == 1 || controllerData[6] == 3 || controllerData[6] == 9)
+        current["controller1"]["up"] = 1;
+    else 
+        current["controller1"]["up"] = 0;
+    if(controllerData[6] == 2 || controllerData[6] == 3 || controllerData[6] == 6)
+        current["controller1"]["right"] = 1;
+    else 
+        current["controller1"]["right"] = 0;
+    if(controllerData[6] == 4 || controllerData[6] == 6 || controllerData[6] == 12)
+        current["controller1"]["down"] = 1;
+    else 
+        current["controller1"]["down"] = 0;
+    if(controllerData[6] == 8 || controllerData[6] == 12 || controllerData[6] == 9)
+        current["controller1"]["left"] = 1;
+    else 
+        current["controller1"]["left"] = 0;
+
+
+
     current["controller1"]["a"] = controllerData[7];
     current["controller1"]["b"] = controllerData[8];
     current["controller1"]["x"] = controllerData[9];
@@ -127,16 +146,30 @@ void server() {
 
     switch(controllerData[17]){
         case 1:
-            current["controller1"]["mode"] = "D";
+            current["controller1"]["mode"] = "d";
             current["controller1"]["lt"] = controllerData[4];
             current["controller1"]["rt"] = controllerData[5];
+            current["controller1"]["connected"] = 1;
             break;
         case 2:
-            current["controller1"]["mode"] = "X";
-            current["controller1"]["la"] = controllerData[5]-controllerData[4];
+            current["controller1"]["connected"] = 1;
+            current["controller1"]["mode"] = "x";
+            current["controller1"]["t"] = controllerData[5]-controllerData[4];
+            if(controllerData[5]-controllerData[4] > 2){
+                current["controller1"]["lt"] = 0;
+                current["controller1"]["rt"] = 1;
+            }
+            else if(controllerData[5]-controllerData[4] < -2){
+                current["controller1"]["lt"] = 1;
+                current["controller1"]["rt"] = 0;
+            }
+            else{
+                current["controller1"]["lt"] = 0;
+                current["controller1"]["rt"] = 0;
+            }
             break;
         default:
-            current["controller1"]["mode"] = "Err";
+            current["controller1"]["connected"] = 0;
             break;
     }
 
@@ -146,7 +179,25 @@ void server() {
     current["controller2"]["rx"] = controllerData[20];
     current["controller2"]["ry"] = controllerData[21];
     
-    current["controller2"]["dpad"] = controllerData[24];
+    //current["controller2"]["dpad"] = controllerData[24];
+    if(controllerData[24] == 1 || controllerData[24] == 3 || controllerData[24] == 9)
+        current["controller2"]["up"] = 1;
+    else 
+        current["controller2"]["up"] = 0;
+    if(controllerData[24] == 2 || controllerData[24] == 3 || controllerData[24] == 6)
+        current["controller2"]["right"] = 1;
+    else 
+        current["controller2"]["right"] = 0;
+    if(controllerData[24] == 4 || controllerData[24] == 6 || controllerData[24] == 12)
+        current["controller2"]["down"] = 1;
+    else 
+        current["controller2"]["down"] = 0;
+    if(controllerData[24] == 8 || controllerData[24] == 12 || controllerData[24] == 9)
+        current["controller2"]["left"] = 1;
+    else 
+        current["controller2"]["left"] = 0;
+
+
     current["controller2"]["a"] = controllerData[25];
     current["controller2"]["b"] = controllerData[26];
     current["controller2"]["x"] = controllerData[27];
@@ -160,16 +211,30 @@ void server() {
 
     switch(controllerData[35]){
         case 1:
-            current["controller2"]["mode"] = "D";
+            current["controller2"]["mode"] = "d";
             current["controller2"]["lt"] = controllerData[22];
             current["controller2"]["rt"] = controllerData[23];
+            current["controller2"]["connected"] = 1;
             break;
         case 2:
-            current["controller2"]["mode"] = "X";
-            current["controller2"]["la"] = controllerData[23]-controllerData[22];
+            current["controller2"]["mode"] = "x";
+            current["controller2"]["t"] = controllerData[23]-controllerData[22];
+            current["controller2"]["connected"] = 1;
+            if(controllerData[23]-controllerData[22] > 2){
+                current["controller2"]["lt"] = 0;
+                current["controller2"]["rt"] = 1;
+            }
+            else if(controllerData[23]-controllerData[22] < -2){
+                current["controller2"]["lt"] = 1;
+                current["controller2"]["rt"] = 0;
+            }
+            else{
+                current["controller2"]["lt"] = 0;
+                current["controller2"]["rt"] = 0;
+            }
             break;
         default:
-            current["controller2"]["mode"] = "Err";
+            current["controller2"]["connected"] = 0;
             break;
     }
 

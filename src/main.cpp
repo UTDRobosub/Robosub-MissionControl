@@ -25,11 +25,11 @@ int main(int argc, char* argv[]){
     
 
     thread controlThread(control);
-    thread videoThread(video,videoPort);
+    //thread videoThread(video,videoPort);
     thread serverThread(server);
 
     controlThread.join();
-    videoThread.join();
+    //videoThread.join();
     serverThread.join();
 
     return 0;
@@ -59,6 +59,7 @@ void control(){
     //main loop
     while(running){
 
+        robosub::Time::waitMillis(1000);
         //event loop
         SDL_PumpEvents();
         while( SDL_PollEvent( &event ) != 0 ) {
