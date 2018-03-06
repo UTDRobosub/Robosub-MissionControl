@@ -29,8 +29,6 @@
         @apply --layout-center-justified;
         @apply --layout-center;
         width: 100%;
-        position: relative;
-        left: 18px;
       }
       div.live {
         background-color: var(--paper-green-600);
@@ -44,10 +42,32 @@
       div.live[disconnected] {
         background-color: var(--paper-grey-600);
       }
+      span.mode {
+        padding: 4px;
+        font-size: 14px;
+        @apply --font-main;
+        background-color: var(--paper-grey-300);
+        color: var(--paper-grey-700);
+        border-radius: 4px;
+        width: 16px;
+        text-align: center;
+        margin-left: 16px;
+        margin-right: 8px;
+      }
+      span.mode[hide] {
+        background-color: transparent;
+        color: transparent;
+      }
+      paper-icon-button {
+        margin-right: 6px;
+        min-width: 40px;
+        padding: 10px;
+      }
     </style>
 
     <div class="graph">
       <div class="flex">
+        <span class="mode" hide$="[[!data.mode]]">[[data.mode]]</span>
         <div class="flex-inside">
           <h4>[[title]]</h4>
           <div class="live" disconnected$=[[!data.connected]]>
