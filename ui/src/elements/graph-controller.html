@@ -4,6 +4,7 @@
       :host {
         display: block;
         --graph-controller-color: var(--paper-red-a400);
+        --graph-controller-disabled-color: var(--paper-grey-500);
       }
       img {
         height: 300px;
@@ -56,23 +57,24 @@
       static get properties() {
         return {
           title: String,
+          deadband: { type: Number, value: 10 },
           data: { type: Object, observer: "_dataChanged", value: {
             connected: 0,
             mode: "x", //or d
-            a: 1,
-            b: 1,
-            x: 1,
-            y: 1,
-            start: 1,
-            select: 1,
+            a: 0,
+            b: 0,
+            x: 0,
+            y: 0,
+            start: 0,
+            select: 0,
             //bumpers
-            lb: 1,
-            rb: 1,
+            lb: 0,
+            rb: 0,
             //trigger (single float - combined mode)
             t: 0, //-255 to 255
             //trigger (two buttons)
-            lt: 1,
-            rt: 1,
+            lt: 0,
+            rt: 0,
             //joystick buttons
             ldown: 0,
             rdown: 0,
@@ -82,10 +84,10 @@
             rx: 0,
             ry: 0,
             //dpad
-            left: 1,
-            right:1,
-            up: 1,
-            down: 1
+            left: 0,
+            right: 0,
+            up: 0,
+            down: 0
           }}
         }
       }
@@ -121,10 +123,13 @@
 
         //get color
         var color;
+        var disabledColor;
         if (ShadyCSS) {
           color = ShadyCSS.getComputedStyleValue(this, '--graph-controller-color');
+          disabledColor = ShadyCSS.getComputedStyleValue(this, '--graph-controller-disabled-color');
         } else {
           color = getComputedStyle(this).getPropertyValue('--graph-controller-color');
+          disabledColor = getComputedStyle(this).getPropertyValue('--graph-controller-disabled-color');
         }
 
         //controller image
@@ -132,6 +137,11 @@
         .attr('width', (771 / 501) * 300)
         .attr('height', 300)
         .attr("xlink:href", "../img/controller.png");
+
+        svg.select("g").remove();
+
+        if (!this.data) return;
+        var g = svg.append("g");
 
         //render buttons
         const leftDpad = [
@@ -232,7 +242,7 @@
 
           if (btn.t == "c") {
             //draw as circle
-            svg.append("circle")
+            g.append("circle")
             .style("fill", color)
             .attr("r", btn.r * scale)
             .attr("cx", btn.c[0] * scale)
@@ -248,7 +258,7 @@
             })
             .curve(d3.curveCardinalClosed);
 
-            svg.append("path")
+            g.append("path")
             .attr("d", line(btn.d))
             .attr("fill", color);
           }
@@ -259,13 +269,21 @@
         var ly = this.data.ly / 255.0 * joyConfig.l.r + joyConfig.l.c[1];
         var rx = this.data.rx / 255.0 * joyConfig.r.r + joyConfig.r.c[0];
         var ry = this.data.ry / 255.0 * joyConfig.r.r + joyConfig.r.c[1];
-        svg.append("circle")
-        .style("fill", color)
+        var colorLeft = color;
+        var colorRight = color;
+        if (Math.sqrt((this.data.lx*this.data.lx) + (this.data.ly*this.data.ly)) < this.deadband) {
+          colorLeft = disabledColor;
+        }
+        if (Math.sqrt((this.data.rx*this.data.rx) + (this.data.ry*this.data.ry)) < this.deadband) {
+          colorRight = disabledColor;
+        }
+        g.append("circle")
+        .style("fill", colorLeft)
         .attr("r", 5)
         .attr("cx", lx * scale)
         .attr("cy", ly * scale);
-        svg.append("circle")
-        .style("fill", color)
+        g.append("circle")
+        .style("fill", colorRight)
         .attr("r", 5)
         .attr("cx", rx * scale)
         .attr("cy", ry * scale);
