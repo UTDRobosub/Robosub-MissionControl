@@ -1,7 +1,7 @@
 #include <SDL/SDL.h>
 #include <iostream>
 #include <thread>
-//#include <librobosub/robosub.h>
+#include <librobosub/robosub.h>
 #include "controller.h"
 #include "main.h"
 
@@ -15,6 +15,7 @@ void server();
 bool running = true;
 bool refresh = false;
 int controllerData[36];
+long controllerTime;
 
 int main(int argc, char* argv[]){
 
@@ -60,7 +61,6 @@ void control(){
     //main loop
     while(running){
 
-
         //event loop
         SDL_PumpEvents();
         while( SDL_PollEvent( &event ) != 0 ) {
@@ -68,8 +68,8 @@ void control(){
                 running = false;
         }
 
-
-        if(refresh){ 
+        //refresh when requested or both joysticks are disconnected
+        if(refresh || (controllerData[17] == 0) && (controllerData[35] == 0)) {
             refresh = false;
             SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
             SDL_InitSubSystem(SDL_INIT_JOYSTICK);
@@ -79,6 +79,9 @@ void control(){
 
         controller1.getStates(&controllerData[0]);
         controller2.getStates(&controllerData[18]);
+
+        controllerTime = robosub::Time::millis(); //add current timestamp
+        robosub::Time::waitMillis(1); //prevent pinning the processor at 100%
     }
 
     SDL_Quit();

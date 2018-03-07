@@ -1,7 +1,5 @@
 //controller.h
-
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#pragma once
 
 #include <SDL/SDL.h>
 #include <string>
@@ -14,5 +12,3 @@ class Controller{
         void getStates(int*);
         void setJoystick(SDL_Joystick*);
 };
-
-#endif

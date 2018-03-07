@@ -92,13 +92,13 @@ void server() {
   });
 
   //wait one second for server to start
-  cout << "Starting server..." << endl;
   robosub::Time::waitMillis(1000);
+  cout << "Server started" << endl;
 
   int i=0;
   while(true) {
     previous = current;
-    current["index"] = (i++ / 1000) % 2; //force refresh every second
+    current["index"] = (i++ / 1) % 1000; //force refresh every second
 
     robosub::Time::waitMillis(1);
 
@@ -254,6 +254,7 @@ void server() {
       DataBucket sentState = current;
       sentState["time"] = milliseconds_since_epoch;
       sentState["rtt"] = connectionState[connection].rtt;
+      sentState["controllerTime"] = controllerTime;
       compressed = sentState.compress(previousState);
 
       //set new connection state

@@ -91,14 +91,21 @@
           title: String,
           value: { type: String, value: "", observer: "_valueChanged" },
           _valueCache: { type: Array, value: [ ] },
-          autoScroll: { type: Boolean, value: false }
+          autoScroll: { type: Boolean, value: false },
+          time: Number,
+          keepLast: { type: Number, value: 200 }
         }
       }
 
       _valueChanged(value) {
         if (typeof value === 'undefined') return;
         if (typeof value === 'object') value = JSON.stringify(value);
-        this.push("_valueCache", { time: moment().format("HH:mm:ss.SSS"), value: value });
+        if (typeof this.time === 'undefined') return;
+        this.push("_valueCache", { time: moment(this.time).format("HH:mm:ss.SSS"), value: value });
+        if (this._valueCache.length > this.keepLast * 2) {
+          console.log("shift");
+          this.splice("_valueCache", 0, this.keepLast);
+        }
 
         setTimeout(() => {
           if (this.autoScroll) {
