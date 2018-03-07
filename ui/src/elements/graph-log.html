@@ -46,7 +46,7 @@
         width: 100%;
         text-align: center;
         position: relative;
-        left: 46px;
+        left: -28px;
       }
       div.flex > span {
         display: block;
@@ -54,11 +54,12 @@
         font-size: 12px;
         color: var(--paper-grey-400);
         @apply --layout-horizontal;
-        @apply --layout-end-justified;
+        @apply --layout-start-justified;
         @apply --layout-center;
-        width: 110px;
+        min-width: 106px;
       }
       paper-icon-button {
+        margin-left: 6px;
         margin-right: 6px;
         min-width: 40px;
         padding: 10px;
@@ -70,8 +71,9 @@
 
     <div class="graph">
       <div class="flex">
+        <span><paper-icon-button scrolling$="[[autoScroll]]" icon="mdi:checkbox-blank-circle" on-tap="_followLog"></paper-icon-button> Follow Log</span>
         <h4>[[title]]</h4>
-        <span>Follow Log<paper-icon-button scrolling$="[[autoScroll]]" icon="mdi:checkbox-blank-circle" on-tap="_followLog"></paper-icon-button></span>
+        <paper-icon-button icon="mdi:delete" on-tap="_clearLog"></paper-icon-button>
       </div>
       <div class="data" id="scroll">
         <template is="dom-repeat" items="[[_valueCache]]" as="item">
@@ -94,15 +96,21 @@
       }
 
       _valueChanged(value) {
-        if (!value) return;
+        if (typeof value === 'undefined') return;
+        if (typeof value === 'object') value = JSON.stringify(value);
         this.push("_valueCache", { time: moment().format("HH:mm:ss.SSS"), value: value });
 
         setTimeout(() => {
           if (this.autoScroll) {
             var scroll = this.$.scroll;
             scroll.scrollTop = scroll.scrollHeight;
+            this.set("autoScroll", true);
           }
         }, 1);
+      }
+
+      _clearLog() {
+        this.set("_valueCache", [ ]);
       }
 
       _followLog() {
@@ -115,7 +123,7 @@
         super.ready();
         var scroll = this.$.scroll;
         scroll.onscroll = (e) => {
-          if (scroll.scrollTop + 32 < scroll.scrollHeight - scroll.offsetHeight) {
+          if (scroll.scrollTop + 256 < scroll.scrollHeight - scroll.offsetHeight) {
             this.set("autoScroll", false);
           } else {
             this.set("autoScroll", true);

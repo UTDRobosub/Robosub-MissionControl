@@ -10,6 +10,13 @@ using WsServer = robosub::ws::SocketServer<robosub::ws::WS>;
 #include <stdlib.h> //rand
 #include "main.h"
 
+struct ConnectionState {
+public:
+  bool ready = false;
+  long lastSend = 0;
+  long rtt = 0;
+};
+
 void server() {
   //prepare buckets to store data
   DataBucket current;
@@ -22,19 +29,23 @@ void server() {
   //server.config.address = "0.0.0.0";
 
   //endpoint state storage
-  std::map<shared_ptr<WsServer::Connection>, DataBucket> connectionState;
+  std::map<shared_ptr<WsServer::Connection>, DataBucket> connectionData;
+  std::map<shared_ptr<WsServer::Connection>, ConnectionState> connectionState;
 
   //GET "/": root endpoint
   auto &root = server.endpoint["^/?$"];
   //GET "/": on open
   //When opened, server should send initial state message
-  root.on_open = [&connectionState,&current](shared_ptr<WsServer::Connection> connection) {
+  root.on_open = [&connectionState,&connectionData,&current](shared_ptr<WsServer::Connection> connection) {
     cout << "Server: Opened connection " << connection.get() << endl;
     //put current state into state storage
-    connectionState[connection] = current;
+    connectionData[connection] = current;
+    connectionState[connection] = ConnectionState();
+    connectionState[connection].lastSend = robosub::Time::millis();
+
     //convert current state to stream
     auto send_stream = make_shared<WsServer::SendStream>();
-    *send_stream << connectionState[connection];
+    *send_stream << connectionData[connection];
     //send current state
     connection->send(send_stream, [](const robosub::ws::error_code &ec) {
       if(ec) {
@@ -49,19 +60,28 @@ void server() {
   root.on_message = [&connectionState](shared_ptr<WsServer::Connection> connection, shared_ptr<WsServer::Message> message) {
     //Display message received
     auto message_str = message->string();
-    cout << "Server: Message received: " << message_str;
-    if(message_str == "reset-controllers")
-        refresh = true;
+    if (message_str == "\x06") {
+      connectionState[connection].ready = true;
+      connectionState[connection].rtt = robosub::Time::millis() - connectionState[connection].lastSend;
+    } else if (message_str == "reset-controllers") {
+      cout << "Resetting controllers" << endl;
+      refresh = true;
+    } else {
+      cout << "Server: Message received: " << message_str << endl;
+    }
   };
   //GET "/": on close
-  root.on_close = [&connectionState](shared_ptr<WsServer::Connection> connection, int status, const string & /*reason*/) {
+  root.on_close = [&connectionState,&connectionData](shared_ptr<WsServer::Connection> connection, int status, const string & /*reason*/) {
     connectionState.erase(connection);
+    connectionData.erase(connection);
     // See RFC 6455 7.4.1. for status codes
     cout << "Server: Closed connection " << connection.get() << " with status code " << status << endl;
   };
   //GET "/": on error
-  root.on_error = [&connectionState](shared_ptr<WsServer::Connection> connection, const robosub::ws::error_code &ec) {
+  root.on_error = [&connectionState,&connectionData](shared_ptr<WsServer::Connection> connection, const robosub::ws::error_code &ec) {
     // See http://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
+    //connectionState.erase(connection);
+    //connectionData.erase(connection);
     cout << "Server: Error in connection " << connection.get() << ". "
          << "Error: " << ec << ", error message: " << ec.message() << endl;
   };
@@ -78,13 +98,11 @@ void server() {
   int i=0;
   while(true) {
     previous = current;
-    current["rand"] = (i++ / 10) % 1000;
+    current["index"] = (i++ / 1000) % 2; //force refresh every second
 
-    robosub::Time::waitMillis(25);
+    robosub::Time::waitMillis(1);
 
-    unsigned long milliseconds_since_epoch =
-    std::chrono::system_clock::now().time_since_epoch() /
-    std::chrono::milliseconds(1);
+    unsigned long milliseconds_since_epoch = robosub::Time::millis();
 
     current["controller1"] = { };
     current["controller1"]["lx"] = controllerData[0];
@@ -218,23 +236,32 @@ void server() {
             break;
     }
 
-    cout << current << endl;
+    // cout << current << endl;
 
     //send update to all active connections
     for(auto &connection : server.get_connections())
     {
+      if (!connectionState[connection].ready) continue;
+
       //compress data
-      DataBucket previousState = connectionState[connection];
+      DataBucket previousState = connectionData[connection];
       DataBucket compressed = current.compress(previousState);
 
       //skip if no changes
       if (compressed.toJson().empty()) continue;
 
-      current["time"] = milliseconds_since_epoch;
-      compressed = current.compress(previousState);
+      //update time-dependent values and recompress
+      DataBucket sentState = current;
+      sentState["time"] = milliseconds_since_epoch;
+      sentState["rtt"] = connectionState[connection].rtt;
+      compressed = sentState.compress(previousState);
 
-      //set new connection state (assume received)
-      connectionState[connection] = current;
+      //set new connection state
+      connectionData[connection] = current;
+
+      //update connection state
+      connectionState[connection].ready = false;
+      connectionState[connection].lastSend = robosub::Time::millis();
 
       //check if better to send as compressed or uncompressed
       //cout << current.toString().length() << " " << compressed.toString().length() << endl;
@@ -242,7 +269,7 @@ void server() {
       {
         //better to send uncompressed
         auto send_stream = make_shared<WsServer::SendStream>();
-        *send_stream << current;
+        *send_stream << sentState;
         connection->send(send_stream);
       } else {
         //send compressed

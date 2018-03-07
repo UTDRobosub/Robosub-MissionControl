@@ -79,7 +79,7 @@
 
         svg.select("g").remove();
 
-        if (data && data[this.xKey] && data[this.yKey])
+        if (data && (typeof data[this.xKey] !== 'undefined') && (typeof data[this.yKey] !== 'undefined'))
           this.push("_dataCache", data);
 
         var color;
@@ -101,7 +101,7 @@
           .y0(y(0))
           .curve(d3.curveMonotoneX);
 
-        while (this._dataCache.length > 0 &&  !moment(this._dataCache[0].time).isAfter(moment().subtract(this.xSeconds, 'seconds'))) {
+        while (this._dataCache.length > 0 && !moment(this._dataCache[0].time).isAfter(moment().subtract(this.xSeconds, 'seconds'))) {
           this.shift("_dataCache");
         }
 
@@ -129,7 +129,7 @@
             .attr("text-anchor", "end")
             .text(this.yLabel);
 
-        if (!data || !data[this.xKey] || !data[this.yKey]) return;
+        if (!data || (typeof data[this.xKey] === 'undefined') || (typeof data[this.yKey] === 'undefined')) return;
 
         g.append("path")
           .datum(this.get("_dataCache"))

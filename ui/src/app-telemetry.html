@@ -25,7 +25,7 @@
       #gRandom {
         --graph-line-color: var(--paper-blue-500);
       }
-      #gLatency {
+      #gRTT {
         --graph-line-color: var(--paper-green-500);
       }
       #gSerial {
@@ -90,14 +90,14 @@
 
       <graph-value style="width: 250px;display:inline-block;margin-right:8px;" title="Robot Time" value="[[_getTime(data.time)]]"></graph-value>
       <graph-value style="width: 250px;display:inline-block;margin-right:8px;" title="System Time" value="[[currentTime]]"></graph-value>
-      <graph-value style="width: 120px;display:inline-block" title="Latency" value="[[data.latency]] ms"></graph-value>
+      <graph-value style="width: 120px;display:inline-block" title="RTT" value="[[data.rtt]] ms"></graph-value>
 
       <iron-grid>
         <div class="xs12 s12 m6">
-          <graph-line id="gLatency" title="Latency Between Websockets Server and Browser" data="[[data]]" x-key="time" x-seconds=30 y-key="latency" y-label="Latency (ms)" y-auto-domain average-over=1 auto-refresh=[[autoRefreshInterval]]></graph-line>
+          <graph-line id="gRTT" title="Mission Control to Browser RTT" data="[[data]]" x-key="time" x-seconds=30 y-key="rtt" y-label="RTT (ms)" y-auto-domain average-over=1 auto-refresh=[[autoRefreshInterval]]></graph-line>
         </div>
         <div class="xs12 s12 m6">
-          <!-- <graph-line id="gRandom" title="Random Numbers" data="[[data]]" x-key="time" x-seconds=30 y-key="rand" y-label="Random" y-min="0" y-max="100" auto-refresh=500></graph-line> -->
+
         </div>
         <div class="xs12 s12 m6">
           <graph-controller id="gController1" title="Controller 1" data="[[data.controller1]]"></graph-controller>
@@ -106,7 +106,7 @@
           <graph-controller id="gController2" title="Controller 2" data="[[data.controller2]]"></graph-controller>
         </div>
         <div class="xs12">
-          <graph-log id="gLog1" title="Log Data" value="[[data.rand]]" auto-scroll></graph-log>
+          <graph-log id="gLog1" title="Log Data" value="[[data]]" auto-scroll></graph-log>
         </div>
 <!--        <div class="xs12 s12 m6">
           <graph-line id="gSerial" title="Serial data output" data="[[data]]" x-key="time" x-seconds=30 y-key="serial" y-label="Serial Data" y-auto-domain average-over=1 auto-refresh="[[_autoRefreshValue(status)]]"></graph-line>
@@ -215,15 +215,12 @@
             state = data;
           }
 
-          state.latency = moment().valueOf() - state.time;
-          if (state.latency > 9999) state.latency = "-";
-
           this.set("currentTime", moment().format("hh:mm:ss.SSS a"));
           this.set("status", "Connected");
           this.set("data", state);
+          this.ws.send(String.fromCharCode(6)); //send ACK
         };
         this.ws.onopen = (evt) => {
-          // ws.send("hello");
           this.set("status", "Connected");
         }
         this.ws.onclose = function (event) {
