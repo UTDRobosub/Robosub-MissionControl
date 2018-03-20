@@ -98,8 +98,8 @@ void server() {
   int i=0;
   while(true) {
     previous = current;
-    current["index"] = (i++ / 1) % 1000; //force refresh every second
-
+    current["index"] = (i++ / 1000) % 1000; //force refresh approx every second
+    
     robosub::Time::waitMillis(1);
 
     unsigned long milliseconds_since_epoch = robosub::Time::millis();

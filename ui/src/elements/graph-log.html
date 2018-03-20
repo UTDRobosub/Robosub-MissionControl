@@ -103,7 +103,6 @@
         if (typeof this.time === 'undefined') return;
         this.push("_valueCache", { time: moment(this.time).format("HH:mm:ss.SSS"), value: value });
         if (this._valueCache.length > this.keepLast * 2) {
-          console.log("shift");
           this.splice("_valueCache", 0, this.keepLast);
         }
 
