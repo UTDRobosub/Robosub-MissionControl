@@ -128,7 +128,7 @@ void server() {
     current["index"] = (i++ / 1000) % 1000; //force refresh approx every second
 
     auto ss = make_shared<WsClient::SendStream>();
-    *ss << current["index"];
+    *ss << current;
     client.connection->send(ss);
 
     robosub::Time::waitMillis(100);
