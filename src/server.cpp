@@ -97,19 +97,11 @@ void server() {
   client.on_message = [](shared_ptr<WsClient::Connection> connection, shared_ptr<WsClient::Message> message) {
     cout << "Client: Message received: \"" << message->string() << "\"" << endl;
 
-    cout << "Client: Sending close connection" << endl;
-    connection->send_close(1000);
+    //TODO handle telemetry from robot
   };
 
   client.on_open = [](shared_ptr<WsClient::Connection> connection) {
     cout << "Client: Opened connection" << endl;
-
-    string message = "Hello";
-    cout << "Client: Sending message: \"" << message << "\"" << endl;
-
-    auto send_stream = make_shared<WsClient::SendStream>();
-    *send_stream << message;
-    connection->send(send_stream);
   };
 
   client.on_close = [](shared_ptr<WsClient::Connection> /*connection*/, int status, const string & /*reason*/) {
@@ -121,7 +113,10 @@ void server() {
     cout << "Client: Error: " << ec << ", error message: " << ec.message() << endl;
   };
 
-  client.start();
+  thread client_thread([&client]() {
+    // Start WS-server
+    client.start();
+  });
 
   //wait one second for server to start
   robosub::Time::waitMillis(1000);
@@ -131,8 +126,12 @@ void server() {
   while(true) {
     previous = current;
     current["index"] = (i++ / 1000) % 1000; //force refresh approx every second
-    
-    robosub::Time::waitMillis(1);
+
+    auto ss = make_shared<WsClient::SendStream>();
+    *ss << current["index"];
+    client.connection->send(ss);
+
+    robosub::Time::waitMillis(100);
 
     unsigned long milliseconds_since_epoch = robosub::Time::millis();
 
@@ -269,11 +268,6 @@ void server() {
     }
 
     // cout << current << endl;
-
-    cout << client.get_connection() << endl;
-    auto ss = make_shared<WsClient::SendStream>();
-    *ss << current["index"];
-    client.get_connection()->send(ss);
 
     //send update to all active connections
     for(auto &connection : server.get_connections())
