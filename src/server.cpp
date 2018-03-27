@@ -180,6 +180,7 @@ void server() {
         DataBucket temp = DataBucket(message_str);
         current["rand"] = temp["rand"];
         current["robot_rtt"] = temp["rtt"];
+        current["pin"] = temp["pin"];
         auto send_stream = make_shared<WsClient::SendStream>();
         *send_stream << "\x06";
         connection->send(send_stream);
