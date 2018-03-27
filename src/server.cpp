@@ -20,7 +20,7 @@ public:
 };
 
 template <class T>
-void send(shared_ptr<typename T::Connection> connection, 
+void send(shared_ptr<typename T::Connection> connection,
           ConnectionState &connectionState,
           DataBucket &connectionData,
           DataBucket &current,
@@ -150,8 +150,8 @@ void server() {
 
 
     //CLIENT
-  //WsClient client("localhost:8081/echo");
-  WsClient client("169.254.85.1:8081/");
+  WsClient client("localhost:8081/");
+  // WsClient client("169.254.85.1:8081/");
   client.on_open = [&clientConnectionState,&clientConnectionData,&toRobot,&clientConnected](shared_ptr<WsClient::Connection> connection) {
     clientConnected = true;
     clientConnectionData = toRobot;
@@ -181,6 +181,8 @@ void server() {
         current["rand"] = temp["rand"];
         current["robot_rtt"] = temp["rtt"];
         current["pin"] = temp["pin"];
+        current["robotCpu"] = temp["cpu"];
+        current["robotRam"] = temp["ram"];
         auto send_stream = make_shared<WsClient::SendStream>();
         *send_stream << "\x06";
         connection->send(send_stream);
@@ -374,4 +376,3 @@ void server() {
 
   return;
 }
-
