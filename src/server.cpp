@@ -202,7 +202,11 @@ void server() {
 
   thread client_thread([&client]() {
     // Start WS-server
-    client.start();
+    while(true){
+        client.start();
+        cout << "Not connected to robot" << endl;
+        robosub::Time::waitMillis(1000);
+    }
   });
 
 
@@ -220,7 +224,7 @@ void server() {
   while(true) {
     current["index"] = (i++ / 1000) % 1000; //force refresh approx every second
 
-    robosub::Time::waitMillis(100);
+    robosub::Time::waitMillis(1);
 
     unsigned long milliseconds_since_epoch = robosub::Time::millis();
 
