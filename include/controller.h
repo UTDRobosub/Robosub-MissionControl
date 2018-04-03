@@ -14,7 +14,7 @@ class Controller{
     public:
         void getStates(int*);//should no longer be needed
         void controllerDataBucket(DataBucket&, String);
-        void robotDataBucket(DataBucket);
+        void robotDataBucket(DataBucket&, String, int=1);
         int mode();
         void setJoystick(SDL_Joystick*);
 

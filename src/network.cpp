@@ -242,11 +242,9 @@ void network() {
     controller1->controllerDataBucket(current,"controller1");
     controller2->controllerDataBucket(current,"controller2");
 
-    //TODO instead of copying, parse into robot vars
-    toRobot["controller1"] = current["controller1"];
-    toRobot["controller2"] = current["controller2"];
-
-    //cout << current << endl;
+    controller1->robotDataBucket(toRobot,"controller1");
+    controller2->robotDataBucket(toRobot,"controller2");
+    cout << toRobot << endl;
 
 
     //send update to all active connections
