@@ -93,7 +93,7 @@
       <graph-value style="width: 250px;display:inline-block;margin-right:8px;" title="Robot Time" value="[[_getTime(data.time)]]"></graph-value>
       <graph-value style="width: 250px;display:inline-block;margin-right:8px;" title="System Time" value="[[currentTime]]"></graph-value>
       <graph-value style="width: 120px;display:inline-block" title="Total RTT" value="[[_computeRtt(data.rtt, data.robot_rtt)]] ms"></graph-value>
-      
+
       <iron-grid>
         <div class="xs12 s12 m6">
           <graph-line id="gRobot_RTT" title="Mission Control to Robot RTT" data="[[data]]" x-key="time" x-seconds=30 y-key="robot_rtt" y-label="RTT (ms)" y-auto-domain average-over=1 auto-refresh=[[autoRefreshInterval]]></graph-line>
@@ -106,6 +106,9 @@
         </div>
         <div class="xs12 s12 m6">
           <graph-line id="gRAM" title="Robot RAM" data="[[data]]" x-key="time" x-seconds=30 y-key="robotRam" y-label="RAM Usage (%)" y-min=0 y-max=100 average-over=1 auto-refresh=[[autoRefreshInterval]]></graph-line>
+        </div>
+        <div class="xs12 s12 m6">
+          <graph-line id="gIMU" title="Acceleration (X)" data="[[data]]" x-key="time" x-seconds=30 y-key="imu.ax" y-label="Acceleration (raw)" y-auto-domain average-over=1 auto-refresh=[[autoRefreshInterval]]></graph-line>
         </div>
         <!-- <div class="xs12 s12 m6">
           <graph-line id="gPIN" title="PIN" data="[[data]]" x-key="time" x-seconds=30 y-key="pin" y-label="pin" y-auto-domain average-over=1 auto-refresh=[[autoRefreshInterval]]></graph-line>
