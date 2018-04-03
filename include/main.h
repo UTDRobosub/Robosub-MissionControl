@@ -1,6 +1,9 @@
 #pragma once
+#include "controller.h"
+
 
 extern bool running;
 extern bool refresh;
-extern int controllerData[36];
+extern Controller* controller1;
+extern Controller* controller2;
 extern long controllerTime;
