@@ -2,3 +2,5 @@ build
 *.swp
 CMakeFiles
 CMakeCache.txt
+.idea
+cmake-build-*
