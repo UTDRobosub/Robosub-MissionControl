@@ -30,7 +30,7 @@ void Controller::controllerDataBucket(DataBucket &b, String s){
             b[s]["connected"] = 1;
             b[s]["mode"] = "D";
             b[s]["lx"] = SDL_JoystickGetAxis(joystick, 0)/128.0 /256.0;
-            b[s]["ly"] = -SDL_JoystickGetAxis(joystick, 1)/128.0 /256.0;
+            b[s]["ly"] = SDL_JoystickGetAxis(joystick, 1)/128.0 /256.0;
             b[s]["rx"] = SDL_JoystickGetAxis(joystick, 2)/128.0 /256.0;
             b[s]["ry"] = SDL_JoystickGetAxis(joystick, 3)/128.0 /256.0;
             b[s]["a"] = SDL_JoystickGetButton(joystick, 1);
@@ -121,7 +121,7 @@ void Controller::controllerDataBucket(DataBucket &b, String s){
             return;
 
     }
-        Mat x = robotState.motorValues(b[s]["lx"],b[s]["ly"],b[s]["rx"]);
+        Mat x = robotState.motorValues(b[s]["lx"],-(double)b[s]["ly"],-(double)b[s]["rx"]);
         b["motors"]["ul"] = x.at<double>(0,0);
         b["motors"]["ur"] = x.at<double>(1,0);
         b["motors"]["bl"] = x.at<double>(2,0);
@@ -135,14 +135,6 @@ void Controller::robotDataBucket(DataBucket &robotBucket, String s, int controlS
     switch(controlScheme){
         case 1:
             if(s == "controller1"){
-                Mat x = this->robotState.motorValues(controllerBucket[s]["lx"],controllerBucket[s]["ly"],controllerBucket[s]["rx"]);
-                //TODO map controls to motors
-                robotBucket["fl"] = x.at<double>(0,0);
-                robotBucket["fr"] = 0;
-                robotBucket["bl"] = 0;
-                robotBucket["br"] = 0;
-                robotBucket["tl"] = controllerBucket[s]["t"];
-                robotBucket["tr"] = controllerBucket[s]["t"];
 
 
             }
