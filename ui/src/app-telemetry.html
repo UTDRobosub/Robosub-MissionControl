@@ -13,6 +13,7 @@
 <link rel="import" href="elements/graph-controller.html">
 <link rel="import" href="elements/graph-line.html">
 <link rel="import" href="elements/graph-log.html">
+<link rel="import" href="elements/graph-robot.html">
 <link rel="import" href="elements/graph-value.html">
 <link rel="import" href="elements/mdi.html">
 
@@ -110,6 +111,9 @@
         <div class="xs12 s12 m6">
           <graph-line id="gIMU" title="Acceleration (X)" data="[[data]]" x-key="time" x-seconds=30 y-key="imu.ax" y-label="Acceleration (raw)" y-auto-domain average-over=1 auto-refresh=[[autoRefreshInterval]]></graph-line>
         </div>
+        <div class="xs12 s12 m6">
+          <graph-robot id="gMotors" title="Motor Values" data="[[data.motors]]"></graph-line>
+        </div>
         <!-- <div class="xs12 s12 m6">
           <graph-line id="gPIN" title="PIN" data="[[data]]" x-key="time" x-seconds=30 y-key="pin" y-label="pin" y-auto-domain average-over=1 auto-refresh=[[autoRefreshInterval]]></graph-line>
         </div> -->
@@ -137,7 +141,7 @@
       static get is() { return 'app-telemetry'; }
       static get properties() {
         return {
-          data: { type: Object, value: { } },
+          data: { type: Object, value: { motors: { ul: 0, ur: 0, bl: 0, br: 0 } } },
           running: { type: Boolean, value: true },
           status: { type: String, value: "Connecting" },
           currentTime: { type: String, value: "" },
