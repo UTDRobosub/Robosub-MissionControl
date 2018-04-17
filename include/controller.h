@@ -4,12 +4,14 @@
 #include <librobosub/robosub.h>
 #include <SDL/SDL.h>
 #include <string>
+#include "robotState.h"
 
 using namespace robosub;
 
 class Controller{
     private:
         SDL_Joystick* joystick = nullptr;
+        RobotState robotState;
 
     public:
         void getStates(int*);//should no longer be needed
