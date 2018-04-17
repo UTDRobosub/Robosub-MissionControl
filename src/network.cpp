@@ -242,9 +242,10 @@ void network() {
     controller1->controllerDataBucket(current,"controller1");
     controller2->controllerDataBucket(current,"controller2");
 
-    controller1->robotDataBucket(toRobot,"controller1");
-    controller2->robotDataBucket(toRobot,"controller2");
-    cout << toRobot << endl;
+    //controller1->robotDataBucket(toRobot,"controller1");
+    //controller2->robotDataBucket(toRobot,"controller2");
+    toRobot["motors"] = current["motors"];
+    cout << current << endl;
 
 
     //send update to all active connections
