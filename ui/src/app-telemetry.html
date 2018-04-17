@@ -110,7 +110,7 @@
           <graph-line id="gRAM" title="Robot RAM" data="[[data]]" x-key="time" x-seconds=30 y-key="robotRam" y-label="RAM Usage (%)" y-min=0 y-max=100 auto-refresh=[[autoRefreshInterval]]></graph-line>
         </div>
         <div class="xs12 s12 m6">
-          <graph-multiline id="gIMU" title="Acceleration" data="[[data]]" x-key="time" x-seconds=30 y-key1="robotCpu" y-key2="robotRam" y-label="Raw Data" y-min=0 y-max=100 auto-refresh=[[autoRefreshInterval]]></graph-multiline>
+          <graph-multiline id="gIMU" title="Acceleration" data="[[data]]" x-key="time" x-seconds=30 y-key1="robotCpu" y-key2="robotRam" y-label1="x" y-label2="y" y-label="Raw Data" y-min=0 y-max=100 auto-refresh=[[autoRefreshInterval]]></graph-multiline>
         </div>
         <div class="xs12 s12 m6">
           <graph-robot id="gMotors" title="Motor Values" data="[[data.motors]]"></graph-robot>
@@ -146,7 +146,7 @@
           running: { type: Boolean, value: true },
           status: { type: String, value: "Connecting" },
           currentTime: { type: String, value: "" },
-          autoRefreshInterval: { type: Number, value: 50 },
+          autoRefreshInterval: { type: Number, value: 1000 },
         };
       }
 

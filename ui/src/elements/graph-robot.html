@@ -23,12 +23,21 @@
         stop-color: var(--graph-robot-color);
         stop-opacity: 0;
       }
+      #markerArrowPath {
+        fill: var(--graph-robot-color);
+      }
     </style>
 
     <div class="graph">
       <h4>[[title]]</h4>
       <div class="center">
-        <svg id="svg"></svg>
+        <svg id="svg">
+          <defs>
+            <marker id="markerArrow" markerWidth="4" markerHeight="4" refX="1" refY="2" orient="auto">
+              <path id="markerArrowPath" d="M2,2 L2,11 L10,6 L2,2" transform="scale(0.3, 0.3)"/>
+            </marker>
+          </defs>
+        </svg>
       </div>
     </div>
   </template>
@@ -124,6 +133,7 @@
                    .attr("y2", offset - Math.cos(angle)*data.ul*vectorLength)
                    .attr("stroke", data.ul > 0 ? color : disabledColor)
                    .attr("stroke-width", vectorStrokeWidth)
+                   .attr("marker-end", data.ul > 0 ? "url(#markerArrow)" : "none")
         var urL = g.append("line")
                   .attr("x1", width - offset)
                   .attr("y1", offset)
@@ -131,6 +141,7 @@
                   .attr("y2", offset - Math.cos(angle)*data.ur*vectorLength)
                   .attr("stroke", data.ur > 0 ? color : disabledColor)
                   .attr("stroke-width", vectorStrokeWidth)
+                  .attr("marker-end", data.ur > 0 ? "url(#markerArrow)" : "none")
         var blL = g.append("line")
                   .attr("x1", offset)
                   .attr("y1", height - offset)
@@ -138,6 +149,7 @@
                   .attr("y2", height - offset + Math.cos(angle)*data.bl*vectorLength)
                   .attr("stroke", data.bl > 0 ? color : disabledColor)
                   .attr("stroke-width", vectorStrokeWidth)
+                  .attr("marker-end", data.bl > 0 ? "url(#markerArrow)" : "none")
         var brL = g.append("line")
                   .attr("x1", width - offset)
                   .attr("y1", height - offset)
@@ -145,6 +157,7 @@
                   .attr("y2", height - offset + Math.cos(angle)*data.br*vectorLength)
                   .attr("stroke", data.br > 0 ? color : disabledColor)
                   .attr("stroke-width", vectorStrokeWidth)
+                  .attr("marker-end", data.br > 0 ? "url(#markerArrow)" : "none")
 
         // var line = d3.line()
         //   .x((d) => { return x(d3.timeParse("%Q")(d[this.xKey])); })
