@@ -13,6 +13,7 @@
 <link rel="import" href="elements/graph-controller.html">
 <link rel="import" href="elements/graph-line.html">
 <link rel="import" href="elements/graph-log.html">
+<link rel="import" href="elements/graph-multiline.html">
 <link rel="import" href="elements/graph-robot.html">
 <link rel="import" href="elements/graph-value.html">
 <link rel="import" href="elements/mdi.html">
@@ -97,22 +98,22 @@
 
       <iron-grid>
         <div class="xs12 s12 m6">
-          <graph-line id="gRobot_RTT" title="Mission Control to Robot RTT" data="[[data]]" x-key="time" x-seconds=30 y-key="robot_rtt" y-label="RTT (ms)" y-auto-domain average-over=1 auto-refresh=[[autoRefreshInterval]]></graph-line>
+          <graph-line id="gRobot_RTT" title="Mission Control to Robot RTT" data="[[data]]" x-key="time" x-seconds=30 y-key="robot_rtt" y-label="RTT (ms)" y-auto-domain auto-refresh=[[autoRefreshInterval]]></graph-line>
         </div>
         <div class="xs12 s12 m6">
-          <graph-line id="gRTT" title="Mission Control to Browser RTT" data="[[data]]" x-key="time" x-seconds=30 y-key="rtt" y-label="RTT (ms)" y-auto-domain average-over=1 auto-refresh=[[autoRefreshInterval]]></graph-line>
+          <graph-line id="gRTT" title="Mission Control to Browser RTT" data="[[data]]" x-key="time" x-seconds=30 y-key="rtt" y-label="RTT (ms)" y-auto-domain auto-refresh=[[autoRefreshInterval]]></graph-line>
         </div>
         <div class="xs12 s12 m6">
-          <graph-line id="gCPU" title="Robot CPU" data="[[data]]" x-key="time" x-seconds=30 y-key="robotCpu" y-label="CPU Usage (%)" y-min=0 y-max=100 average-over=1 auto-refresh=[[autoRefreshInterval]]></graph-line>
+          <graph-line id="gCPU" title="Robot CPU" data="[[data]]" x-key="time" x-seconds=30 y-key="robotCpu" y-label="CPU Usage (%)" y-min=0 y-max=100 auto-refresh=[[autoRefreshInterval]]></graph-line>
         </div>
         <div class="xs12 s12 m6">
-          <graph-line id="gRAM" title="Robot RAM" data="[[data]]" x-key="time" x-seconds=30 y-key="robotRam" y-label="RAM Usage (%)" y-min=0 y-max=100 average-over=1 auto-refresh=[[autoRefreshInterval]]></graph-line>
+          <graph-line id="gRAM" title="Robot RAM" data="[[data]]" x-key="time" x-seconds=30 y-key="robotRam" y-label="RAM Usage (%)" y-min=0 y-max=100 auto-refresh=[[autoRefreshInterval]]></graph-line>
         </div>
         <div class="xs12 s12 m6">
-          <graph-line id="gIMU" title="Acceleration (X)" data="[[data]]" x-key="time" x-seconds=30 y-key="imu.ax" y-label="Acceleration (raw)" y-auto-domain average-over=1 auto-refresh=[[autoRefreshInterval]]></graph-line>
+          <graph-multiline id="gIMU" title="Acceleration" data="[[data]]" x-key="time" x-seconds=30 y-key1="robotCpu" y-key2="robotRam" y-label="Raw Data" y-min=0 y-max=100 auto-refresh=[[autoRefreshInterval]]></graph-multiline>
         </div>
         <div class="xs12 s12 m6">
-          <graph-robot id="gMotors" title="Motor Values" data="[[data.motors]]"></graph-line>
+          <graph-robot id="gMotors" title="Motor Values" data="[[data.motors]]"></graph-robot>
         </div>
         <!-- <div class="xs12 s12 m6">
           <graph-line id="gPIN" title="PIN" data="[[data]]" x-key="time" x-seconds=30 y-key="pin" y-label="pin" y-auto-domain average-over=1 auto-refresh=[[autoRefreshInterval]]></graph-line>

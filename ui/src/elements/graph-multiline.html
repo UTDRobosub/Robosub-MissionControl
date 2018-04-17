@@ -1,0 +1,224 @@
+<dom-module id="graph-multiline">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        --line-1-color: var(--paper-orange-500);
+        --line-2-color: var(--paper-green-500);
+        --line-3-color: var(--paper-blue-500);
+        --line-4-color: var(--paper-purple-500);
+      }
+      svg {
+        width: 100%;
+        height: 200px;
+      }
+      svg #stop-top-1 {
+        stop-color: var(--line-1-color);
+        stop-opacity: 0.7;
+      }
+      svg #stop-bottom-1 {
+        stop-color: var(--line-1-color);
+        stop-opacity: 0;
+      }
+      svg #stop-top-2 {
+        stop-color: var(--line-2-color);
+        stop-opacity: 0.7;
+      }
+      svg #stop-bottom-2 {
+        stop-color: var(--line-2-color);
+        stop-opacity: 0;
+      }
+      svg #stop-top-3 {
+        stop-color: var(--line-3-color);
+        stop-opacity: 0.7;
+      }
+      svg #stop-bottom-3 {
+        stop-color: var(--line-3-color);
+        stop-opacity: 0;
+      }
+      svg #stop-top-4 {
+        stop-color: var(--line-4-color);
+        stop-opacity: 0.7;
+      }
+      svg #stop-bottom-4 {
+        stop-color: var(--line-4-color);
+        stop-opacity: 0;
+      }
+    </style>
+
+    <div class="graph">
+      <h4>[[title]]</h4>
+      <svg id="svg">
+        <defs>
+          <marker id="markerArrow" markerWidth="13" markerHeight="13" refX="2" refY="6" orient="auto">
+            <path d="M2,2 L2,11 L10,6 L2,2" style="fill: #000000;"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+  </template>
+
+  <script>
+    class GraphMultiline extends Polymer.Element {
+      static get is() { return 'graph-multiline'; }
+      static get properties() {
+        return {
+          data: { type: Object, observer: "_dataChanged" },
+          _dataCache: { type: Array, value: [ ] },
+          _averageValue: { type: Object, value: { } },
+          _averageStart: { type: Number, value: 0 },
+
+          title: String,
+          xKey: String,
+          yKey1: String,
+          yKey2: String,
+          yKey3: String,
+          yKey4: String,
+
+          xSeconds: { type: Number, value: 15 },
+          autoRefresh: { type: Number, value: 1000 },
+          averageOver: { type: Number, value: 0 },
+
+          yMin: Number,
+          yMax: Number,
+          yAutoDomain: { type: Boolean, value: false },
+          yLabel: { type: String, value: "" }
+        }
+      }
+
+      _autoRefresh() {
+        setInterval(() => {
+          if (!this.autoRefresh) return;
+          this._dataChanged(this.data);
+        }, this.autoRefresh);
+      }
+
+      _dataChanged(data) {
+        var svg = d3.select(this.$.svg);
+
+        var margin = {top: 20, right: 20, bottom: 30, left: 50},
+        width = +this.$.svg.getBoundingClientRect().width - margin.left - margin.right,
+        height = +this.$.svg.getBoundingClientRect().height - margin.top - margin.bottom;
+        var x = d3.scaleTime()
+        .rangeRound([0, width])
+        .nice(1);
+        var y = d3.scaleLinear()
+        .rangeRound([height, 0])
+        .nice(1);
+
+        svg.select("g").remove();
+
+        if (data && (typeof data[this.xKey] !== 'undefined') && (typeof data[this.yKey1] !== 'undefined'))
+          this.push("_dataCache", data);
+
+        var color1, color2, color3, color4;
+        if (ShadyCSS) {
+          color1 = ShadyCSS.getComputedStyleValue(this, '--line-1-color');
+          color2 = ShadyCSS.getComputedStyleValue(this, '--line-2-color');
+          color3 = ShadyCSS.getComputedStyleValue(this, '--line-3-color');
+          color4 = ShadyCSS.getComputedStyleValue(this, '--line-4-color');
+        } else {
+          color1 = getComputedStyle(this).getPropertyValue('--line-1-color');
+          color2 = getComputedStyle(this).getPropertyValue('--line-2-color');
+          color3 = getComputedStyle(this).getPropertyValue('--line-3-color');
+          color4 = getComputedStyle(this).getPropertyValue('--line-4-color');
+        }
+
+        var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var line1 = this.yKey1 ? d3.line()
+          .x((d) => { return x(d3.timeParse("%Q")(d[this.xKey])); })
+          .y((d) => { return y(d[this.yKey1]); })
+          .curve(d3.curveMonotoneX) : null;
+        var line2 = this.yKey2 ? d3.line()
+          .x((d) => { return x(d3.timeParse("%Q")(d[this.xKey])); })
+          .y((d) => { return y(d[this.yKey2]); })
+          .curve(d3.curveMonotoneX) : null;
+        var line3 = this.yKey3 ? d3.line()
+          .x((d) => { return x(d3.timeParse("%Q")(d[this.xKey])); })
+          .y((d) => { return y(d[this.yKey3]); })
+          .curve(d3.curveMonotoneX) : null;
+        var line4 = this.yKey4 ? d3.line()
+          .x((d) => { return x(d3.timeParse("%Q")(d[this.xKey])); })
+          .y((d) => { return y(d[this.yKey4]); })
+          .curve(d3.curveMonotoneX) : null;
+
+
+        while (this._dataCache.length > 0 && !moment(this._dataCache[0].time).isAfter(moment().subtract(this.xSeconds, 'seconds'))) {
+          this.shift("_dataCache");
+        }
+
+        x.domain([ moment().subtract(this.xSeconds, 'seconds'), moment() ]);
+
+        if (!this.yAutoDomain)
+          y.domain([this.yMin, this.yMax]);
+        else {
+          y.domain(d3.extent(this.get("_dataCache"), (d) => { return d[this.yKey1]; }));
+        }
+
+        g.append("g")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x))
+          .select(".domain")
+          .remove();
+
+        g.append("g")
+          .call(d3.axisLeft(y))
+          .append("text")
+            .attr("fill", "#000")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", "0.71em")
+            .attr("text-anchor", "end")
+            .text(this.yLabel);
+
+        if (!data || (typeof data[this.xKey] === 'undefined') || (typeof data[this.yKey1] === 'undefined')) return;
+
+        if (line1)
+          g.append("path")
+            .datum(this.get("_dataCache"))
+              .attr("fill", "none")
+              .attr("stroke", color1)
+              .attr("stroke-linejoin", "round")
+              .attr("stroke-linecap", "round")
+              .attr("stroke-width", 2)
+              .attr("d", line1);
+        if (line2)
+          g.append("path")
+            .datum(this.get("_dataCache"))
+              .attr("fill", "none")
+              .attr("stroke", color2)
+              .attr("stroke-linejoin", "round")
+              .attr("stroke-linecap", "round")
+              .attr("stroke-width", 2)
+              .attr("d", line2);
+        if (line3)
+          g.append("path")
+            .datum(this.get("_dataCache"))
+              .attr("fill", "none")
+              .attr("stroke", color3)
+              .attr("stroke-linejoin", "round")
+              .attr("stroke-linecap", "round")
+              .attr("stroke-width", 2)
+              .attr("d", line3);
+        if (line4)
+          g.append("path")
+            .datum(this.get("_dataCache"))
+              .attr("fill", "none")
+              .attr("stroke", color4)
+              .attr("stroke-linejoin", "round")
+              .attr("stroke-linecap", "round")
+              .attr("stroke-width", 2)
+              .attr("d", line4);
+  }
+
+      ready() {
+        super.ready();
+
+        this._autoRefresh();
+      }
+    }
+
+    window.customElements.define(GraphMultiline.is, GraphMultiline);
+  </script>
+</dom-module>

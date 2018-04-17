@@ -177,6 +177,8 @@
         if (Math.sqrt((this.data.rx*this.data.rx) + (this.data.ry*this.data.ry)) < this.deadband) {
           colorRight = this._disabledColor;
         }
+        if (!lx || !ly || !rx || !ry) return;
+
         g.append("circle")
         .style("fill", colorLeft)
         .attr("r", 5)

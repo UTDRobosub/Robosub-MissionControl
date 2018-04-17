@@ -56,6 +56,8 @@
         .rangeRound([height, 0])
         .nice(1);
 
+        if (!data) data = { ul: 0, ur: 0, bl: 0, br: 0 }
+
         svg.select("g").remove();
 
         var color, disabledColor;
