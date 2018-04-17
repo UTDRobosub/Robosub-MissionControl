@@ -1,0 +1,207 @@
+<dom-module id="graph-robot">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        --graph-robot-color: rgb(33, 150, 243);
+        --graph-robot-disabled-color: var(--paper-grey-500);
+      }
+      div.center {
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        @apply --layout-center-justified;
+      }
+      svg {
+        height: 200px;
+        width: calc(200px * 12.85 / 12);
+      }
+      svg #stop-top {
+        stop-color: var(--graph-robot-color);
+        stop-opacity: 0.7;
+      }
+      svg #stop-bottom {
+        stop-color: var(--graph-robot-color);
+        stop-opacity: 0;
+      }
+    </style>
+
+    <div class="graph">
+      <h4>[[title]]</h4>
+      <div class="center">
+        <svg id="svg"></svg>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    class GraphRobot extends Polymer.Element {
+      static get is() { return 'graph-robot'; }
+      static get properties() {
+        return {
+          data: { type: Object, observer: "_dataChanged" },
+          title: String
+        }
+      }
+
+      _dataChanged(data) {
+        var svg = d3.select(this.$.svg);
+
+        var margin = {top: 20, right: 10, bottom: 20, left: 10},
+        width = +this.$.svg.getBoundingClientRect().width - margin.left - margin.right,
+        height = +this.$.svg.getBoundingClientRect().height - margin.top - margin.bottom;
+        var x = d3.scaleTime()
+        .rangeRound([0, width])
+        .nice(1);
+        var y = d3.scaleLinear()
+        .rangeRound([height, 0])
+        .nice(1);
+
+        svg.select("g").remove();
+
+        var color, disabledColor;
+        if (ShadyCSS) {
+          color = ShadyCSS.getComputedStyleValue(this, '--graph-robot-color');
+          disabledColor = ShadyCSS.getComputedStyleValue(this, '--graph-robot-disabled-color');
+        } else {
+          color = getComputedStyle(this).getPropertyValue('--graph-robot-color');
+          disabledColor = getComputedStyle(this).getPropertyValue('--graph-robot-disabled-color');
+        }
+
+        var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var offset = 30;
+        var rect = g.append("rect")
+                    .attr("x", offset)
+                    .attr("y", offset)
+                    .attr("width", (200 * 12.85 / 12) - 20 - 2*offset)
+                    .attr("height", 200 - 40 - 2*offset)
+                    .attr("fill", disabledColor)
+                    .attr("opacity", 0.5)
+                    .attr("stroke", disabledColor)
+                    .attr("stroke-width", 5);
+        var rect2 = g.append("rect")
+                    .attr("x", offset)
+                    .attr("y", offset)
+                    .attr("width", (200 * 12.85 / 12) - 20 - 2*offset)
+                    .attr("height", 200 - 40 - 2*offset)
+                    .attr("fill", "none")
+                    .attr("opacity", 1)
+                    .attr("stroke", disabledColor)
+                    .attr("stroke-width", 5);
+
+        const DEGREE = Math.PI / 180;
+        var motorRadius = 7;
+        var angle = 35*DEGREE;
+        var vectorLength = 50;
+        var vectorStrokeWidth = 5;
+        var ul = g.append("circle")
+                       .attr("cx", offset)
+                       .attr("cy", offset)
+                       .attr("r", motorRadius)
+                       .attr("fill", data.ul > 0 ? color : disabledColor);
+        var ur = g.append("circle")
+                       .attr("cx", width - offset)
+                       .attr("cy", offset)
+                       .attr("r", motorRadius)
+                       .attr("fill", data.ur > 0 ? color : disabledColor);
+        var bl = g.append("circle")
+                       .attr("cx", offset)
+                       .attr("cy", height - offset)
+                       .attr("r", motorRadius)
+                       .attr("fill", data.bl > 0 ? color : disabledColor);
+        var br = g.append("circle")
+                       .attr("cx", width - offset)
+                       .attr("cy", height - offset)
+                       .attr("r", motorRadius)
+                       .attr("fill", data.br > 0 ? color : disabledColor);
+
+        var ulL = g.append("line")
+                   .attr("x1", offset)
+                   .attr("y1", offset)
+                   .attr("x2", offset + Math.sin(angle)*data.ul*vectorLength)
+                   .attr("y2", offset - Math.cos(angle)*data.ul*vectorLength)
+                   .attr("stroke", data.ul > 0 ? color : disabledColor)
+                   .attr("stroke-width", vectorStrokeWidth)
+        var urL = g.append("line")
+                  .attr("x1", width - offset)
+                  .attr("y1", offset)
+                  .attr("x2", width - offset - Math.sin(angle)*data.ur*vectorLength)
+                  .attr("y2", offset - Math.cos(angle)*data.ur*vectorLength)
+                  .attr("stroke", data.ur > 0 ? color : disabledColor)
+                  .attr("stroke-width", vectorStrokeWidth)
+        var blL = g.append("line")
+                  .attr("x1", offset)
+                  .attr("y1", height - offset)
+                  .attr("x2", offset + Math.sin(angle)*data.bl*vectorLength)
+                  .attr("y2", height - offset + Math.cos(angle)*data.bl*vectorLength)
+                  .attr("stroke", data.bl > 0 ? color : disabledColor)
+                  .attr("stroke-width", vectorStrokeWidth)
+        var brL = g.append("line")
+                  .attr("x1", width - offset)
+                  .attr("y1", height - offset)
+                  .attr("x2", width - offset - Math.sin(angle)*data.br*vectorLength)
+                  .attr("y2", height - offset + Math.cos(angle)*data.br*vectorLength)
+                  .attr("stroke", data.br > 0 ? color : disabledColor)
+                  .attr("stroke-width", vectorStrokeWidth)
+
+        // var line = d3.line()
+        //   .x((d) => { return x(d3.timeParse("%Q")(d[this.xKey])); })
+        //   .y((d) => { return y(d[this.yKey]); })
+        //   .curve(d3.curveMonotoneX);
+        //
+        // var area = d3.area()
+        //   .x((d) => { return x(d3.timeParse("%Q")(d[this.xKey])); })
+        //   .y1((d) => { return y(d[this.yKey]); })
+        //   .y0(y(0))
+        //   .curve(d3.curveMonotoneX);
+        //
+        // while (this._dataCache.length > 0 && !moment(this._dataCache[0].time).isAfter(moment().subtract(this.xSeconds, 'seconds'))) {
+        //   this.shift("_dataCache");
+        // }
+        //
+        // x.domain([ moment().subtract(this.xSeconds, 'seconds'), moment() ]);
+        //
+        // if (!this.yAutoDomain)
+        //   y.domain([this.yMin, this.yMax]);
+        // else {
+        //   y.domain(d3.extent(this.get("_dataCache"), (d) => { return d[this.yKey]; }));
+        // }
+        //
+        // g.append("g")
+        //   .attr("transform", "translate(0," + height + ")")
+        //   .call(d3.axisBottom(x))
+        //   .select(".domain")
+        //   .remove();
+        //
+        // g.append("g")
+        //   .call(d3.axisLeft(y))
+        //   .append("text")
+        //     .attr("fill", "#000")
+        //     .attr("transform", "rotate(-90)")
+        //     .attr("y", 6)
+        //     .attr("dy", "0.71em")
+        //     .attr("text-anchor", "end")
+        //     .text(this.yLabel);
+        //
+        // if (!data || (typeof data[this.xKey] === 'undefined') || (typeof data[this.yKey] === 'undefined')) return;
+        //
+        // g.append("path")
+        //   .datum(this.get("_dataCache"))
+        //     .attr("fill", "none")
+        //     .attr("stroke", color)
+        //     .attr("stroke-linejoin", "round")
+        //     .attr("stroke-linecap", "round")
+        //     .attr("stroke-width", 1.5)
+        //     .attr("d", line);
+        //
+        // g.append("path")
+        //   .datum(this.get("_dataCache"))
+        //     .style("fill", "url(#areagrad)")
+        //     .attr("stroke", "none")
+        //     .attr("d", area);
+      }
+    }
+
+    window.customElements.define(GraphRobot.is, GraphRobot);
+  </script>
+</dom-module>
