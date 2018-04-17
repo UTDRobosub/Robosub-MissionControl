@@ -5,6 +5,7 @@
         display: block;
         --graph-robot-color: rgb(33, 150, 243);
         --graph-robot-disabled-color: var(--paper-grey-500);
+        --graph-robot-reverse-color: var(--paper-red-500);
       }
       div.center {
         @apply --layout-horizontal;
@@ -26,6 +27,9 @@
       #markerArrowPath {
         fill: var(--graph-robot-color);
       }
+      #markerArrowPathReverse {
+        fill: var(--graph-robot-reverse-color);
+      }
     </style>
 
     <div class="graph">
@@ -35,6 +39,9 @@
           <defs>
             <marker id="markerArrow" markerWidth="4" markerHeight="4" refX="1" refY="2" orient="auto">
               <path id="markerArrowPath" d="M2,2 L2,11 L10,6 L2,2" transform="scale(0.3, 0.3)"/>
+            </marker>
+            <marker id="markerArrowReverse" markerWidth="4" markerHeight="4" refX="1" refY="2" orient="auto">
+              <path id="markerArrowPathReverse" d="M2,2 L2,11 L10,6 L2,2" transform="scale(0.3, 0.3)"/>
             </marker>
           </defs>
         </svg>
@@ -69,12 +76,14 @@
 
         svg.select("g").remove();
 
-        var color, disabledColor;
+        var color, reverseColor, disabledColor;
         if (ShadyCSS) {
           color = ShadyCSS.getComputedStyleValue(this, '--graph-robot-color');
+          reverseColor = ShadyCSS.getComputedStyleValue(this, '--graph-robot-reverse-color');
           disabledColor = ShadyCSS.getComputedStyleValue(this, '--graph-robot-disabled-color');
         } else {
           color = getComputedStyle(this).getPropertyValue('--graph-robot-color');
+          reverseColor = getComputedStyle(this).getPropertyValue('--graph-robot-reverse-color');
           disabledColor = getComputedStyle(this).getPropertyValue('--graph-robot-disabled-color');
         }
 
@@ -109,55 +118,55 @@
                        .attr("cx", offset)
                        .attr("cy", offset)
                        .attr("r", motorRadius)
-                       .attr("fill", data.ul > 0 ? color : disabledColor);
+                       .attr("fill", data.ul > 0 ? color : (data.ul < 0 ? reverseColor : disabledColor));
         var ur = g.append("circle")
                        .attr("cx", width - offset)
                        .attr("cy", offset)
                        .attr("r", motorRadius)
-                       .attr("fill", data.ur > 0 ? color : disabledColor);
+                       .attr("fill", data.ur > 0 ? color : (data.ur < 0 ? reverseColor : disabledColor));
         var bl = g.append("circle")
                        .attr("cx", offset)
                        .attr("cy", height - offset)
                        .attr("r", motorRadius)
-                       .attr("fill", data.bl > 0 ? color : disabledColor);
+                       .attr("fill", data.bl > 0 ? color : (data.bl < 0 ? reverseColor : disabledColor));
         var br = g.append("circle")
                        .attr("cx", width - offset)
                        .attr("cy", height - offset)
                        .attr("r", motorRadius)
-                       .attr("fill", data.br > 0 ? color : disabledColor);
+                       .attr("fill", data.br > 0 ? color : (data.br < 0 ? reverseColor : disabledColor));
 
         var ulL = g.append("line")
                    .attr("x1", offset)
                    .attr("y1", offset)
                    .attr("x2", offset + Math.sin(angle)*data.ul*vectorLength)
                    .attr("y2", offset - Math.cos(angle)*data.ul*vectorLength)
-                   .attr("stroke", data.ul > 0 ? color : disabledColor)
+                   .attr("stroke", data.ul > 0 ? color : (data.ul < 0 ? reverseColor : disabledColor))
                    .attr("stroke-width", vectorStrokeWidth)
-                   .attr("marker-end", data.ul > 0 ? "url(#markerArrow)" : "none")
+                   .attr("marker-end", data.ul > 0 ? "url(#markerArrow)" : (data.ul < 0 ? "url(#markerArrowReverse)" : "none"))
         var urL = g.append("line")
                   .attr("x1", width - offset)
                   .attr("y1", offset)
                   .attr("x2", width - offset - Math.sin(angle)*data.ur*vectorLength)
                   .attr("y2", offset - Math.cos(angle)*data.ur*vectorLength)
-                  .attr("stroke", data.ur > 0 ? color : disabledColor)
+                  .attr("stroke", data.ur > 0 ? color : (data.ur < 0 ? reverseColor : disabledColor))
                   .attr("stroke-width", vectorStrokeWidth)
-                  .attr("marker-end", data.ur > 0 ? "url(#markerArrow)" : "none")
+                  .attr("marker-end", data.ur > 0 ? "url(#markerArrow)" : (data.ur < 0 ? "url(#markerArrowReverse)" : "none"))
         var blL = g.append("line")
                   .attr("x1", offset)
                   .attr("y1", height - offset)
                   .attr("x2", offset + Math.sin(angle)*data.bl*vectorLength)
                   .attr("y2", height - offset + Math.cos(angle)*data.bl*vectorLength)
-                  .attr("stroke", data.bl > 0 ? color : disabledColor)
+                  .attr("stroke", data.bl > 0 ? color : (data.bl < 0 ? reverseColor : disabledColor))
                   .attr("stroke-width", vectorStrokeWidth)
-                  .attr("marker-end", data.bl > 0 ? "url(#markerArrow)" : "none")
+                  .attr("marker-end", data.bl > 0 ? "url(#markerArrow)" : (data.bl < 0 ? "url(#markerArrowReverse)" : "none"))
         var brL = g.append("line")
                   .attr("x1", width - offset)
                   .attr("y1", height - offset)
                   .attr("x2", width - offset - Math.sin(angle)*data.br*vectorLength)
                   .attr("y2", height - offset + Math.cos(angle)*data.br*vectorLength)
-                  .attr("stroke", data.br > 0 ? color : disabledColor)
+                  .attr("stroke", data.br > 0 ? color : (data.br < 0 ? reverseColor : disabledColor))
                   .attr("stroke-width", vectorStrokeWidth)
-                  .attr("marker-end", data.br > 0 ? "url(#markerArrow)" : "none")
+                  .attr("marker-end", data.br > 0 ? "url(#markerArrow)" : (data.br < 0 ? "url(#markerArrowReverse)" : "none"))
 
         // var line = d3.line()
         //   .x((d) => { return x(d3.timeParse("%Q")(d[this.xKey])); })
