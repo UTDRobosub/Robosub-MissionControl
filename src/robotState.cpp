@@ -18,7 +18,7 @@ Mat RobotState::motorValues(double tx, double ty, double r){
     if (maxVal > 0) {
         x /= maxVal;
     }
-    double bNorm = max(sqrt(tx*tx + ty*ty), abs(r));
+    double bNorm = max(sqrt(tx*tx + r*r), abs(ty));
     x *= bNorm;
 
     return x;
