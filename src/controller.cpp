@@ -121,7 +121,7 @@ void Controller::controllerDataBucket(DataBucket &b, String s){
             return;
 
     }
-        Mat x = robotState.motorValues(b[s]["lx"],-(double)b[s]["ly"],-(double)b[s]["rx"]);
+        Mat x = robotState.motorValues(b[s]["rx"],-(double)b[s]["ly"],-(double)b[s]["lx"]);
         b["motors"]["ul"] = x.at<double>(0,0);
         b["motors"]["ur"] = x.at<double>(1,0);
         b["motors"]["bl"] = x.at<double>(2,0);

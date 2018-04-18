@@ -32,6 +32,8 @@ class RobotState{
     const double MOTOR_3_TAU = 180.0*DEGREE + THETA_BASE;
     const double MOTOR_4_TAU = -THETA_BASE;
 
+    const double ROTATION_BIAS = 10.0;
+
 
     //create matrix of inputs
     double _M[4][4] = {
@@ -45,7 +47,7 @@ class RobotState{
 
 
     public:
-   Mat motorValues(double,double,double);
+      Mat motorValues(double, double, double);
 
+      double smoothControllerValue(double);
 };
-

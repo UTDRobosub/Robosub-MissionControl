@@ -142,7 +142,7 @@
       static get is() { return 'app-telemetry'; }
       static get properties() {
         return {
-          data: { type: Object, value: { motors: { ul: 0, ur: 0, bl: 0, br: 0 } } },
+          data: { type: Object, value: { motors: { ul: -1, ur: -1, bl: -1, br: -1 } } },
           running: { type: Boolean, value: true },
           status: { type: String, value: "Connecting" },
           currentTime: { type: String, value: "" },
