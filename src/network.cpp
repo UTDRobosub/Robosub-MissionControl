@@ -183,13 +183,13 @@ void network() {
       clientConnectionState.ready = true;
       clientConnectionState.rtt = robosub::Time::millis() - clientConnectionState.lastSend;
     } else {
-        cout << "Client: Message received: \"" << message_str << "\"" << endl;
+        // cout << "Client: Message received: \"" << message_str << "\"" << endl;
         DataBucket temp = DataBucket(message_str);
-        current["rand"] = temp["rand"];
+        // current["rand"] = temp["rand"];
         current["robot_rtt"] = temp["rtt"];
         current["pin"] = temp["pin"];
-        current["robotCpu"] = temp["cpu"];
-        current["robotRam"] = temp["ram"];
+        current["robotCpu"] = Util::round<double>((double)temp["cpu"]);
+        current["robotRam"] = Util::round<double>((double)temp["ram"]);
         auto send_stream = make_shared<WsClient::SendStream>();
         *send_stream << "\x06";
         connection->send(send_stream);
@@ -223,13 +223,11 @@ void network() {
 
 
 
-
-
-
-
   //wait one second for server to start
   robosub::Time::waitMillis(1000);
   cout << "Server started" << endl;
+
+  DataBucket previousState;
 
   int i=0;
   while(true) {
@@ -242,10 +240,19 @@ void network() {
     controller1->controllerDataBucket(current,"controller1");
     controller2->controllerDataBucket(current,"controller2");
 
+    //skip if no changes
+    DataBucket timeRemoved = current;
+    timeRemoved.remove("robot_rtt");
+
+    DataBucket compressed = timeRemoved.compress(previousState);
+    if (compressed.toJson().empty()) continue;
+    previousState = current;
+    previousState.remove("robot_rtt");
+
     //controller1->robotDataBucket(toRobot,"controller1");
     //controller2->robotDataBucket(toRobot,"controller2");
     toRobot["motors"] = current["motors"];
-    cout << current << endl;
+    //cout << current << endl;
 
 
     //send update to all active connections
