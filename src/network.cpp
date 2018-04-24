@@ -157,8 +157,8 @@ void network() {
 
 
     //CLIENT
-  WsClient client("localhost:8081/");
-  // WsClient client("169.254.85.1:8081/");
+  //WsClient client("localhost:8081/");
+   WsClient client("169.254.85.1:8081/");
   client.on_open = [&clientConnectionState,&clientConnectionData,&toRobot,&clientConnected](shared_ptr<WsClient::Connection> connection) {
     clientConnected = true;
     clientConnectionData = toRobot;
@@ -243,6 +243,8 @@ void network() {
     //skip if no changes
     DataBucket timeRemoved = current;
     timeRemoved.remove("robot_rtt");
+    timeRemoved.remove("robotCpu");
+    timeRemoved.remove("robotRam");
 
     DataBucket compressed = timeRemoved.compress(previousState);
     if (compressed.toJson().empty()) continue;

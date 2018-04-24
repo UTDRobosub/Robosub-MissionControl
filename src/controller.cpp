@@ -128,7 +128,7 @@ void Controller::controllerDataBucket(DataBucket &b, String s){
         b["motors"]["br"] = x.at<double>(3,0);
 }
 
-
+/*
 void Controller::robotDataBucket(DataBucket &robotBucket, String s, int controlScheme){
     DataBucket controllerBucket;
     this->controllerDataBucket(controllerBucket,s);
@@ -146,3 +146,4 @@ void Controller::robotDataBucket(DataBucket &robotBucket, String s, int controlS
             break;
     }
 }
+*/
