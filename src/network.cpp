@@ -31,7 +31,19 @@ void send(shared_ptr<typename T::Connection> connection,
 
       //compress data
       DataBucket previousState = connectionData;
-      DataBucket compressed = current.compress(previousState);
+      
+      //remove time-dependent variables
+      DataBucket timeRemoved = current;
+      timeRemoved.remove("robot_rtt");
+      timeRemoved.remove("robotCpu");
+      timeRemoved.remove("robotRam");
+
+      DataBucket compressed = timeRemoved.compress(previousState);
+      previousState = current;
+      previousState.remove("robot_rtt");
+      previousState.remove("robotCpu");
+      previousState.remove("robotRam");
+      connectionData = previousState;
 
       //skip if no changes
       if (compressed.toJson().empty()) return;
@@ -42,9 +54,6 @@ void send(shared_ptr<typename T::Connection> connection,
       sentState["rtt"] = connectionState.rtt;
       sentState["controllerTime"] = controllerTime;
       compressed = sentState.compress(previousState);
-
-      //set new connection state
-      connectionData = current;
 
       //update connection state
       connectionState.ready = false;
@@ -240,26 +249,11 @@ void network() {
     controller1->controllerDataBucket(current,"controller1");
     controller2->controllerDataBucket(current,"controller2");
 
-    //skip if no changes
-    DataBucket timeRemoved = current;
-    timeRemoved.remove("robot_rtt");
-    timeRemoved.remove("robotCpu");
-    timeRemoved.remove("robotRam");
-
-    DataBucket compressed = timeRemoved.compress(previousState);
-    if (compressed.toJson().empty()) continue;
-    previousState = current;
-    previousState.remove("robot_rtt");
-
-    //controller1->robotDataBucket(toRobot,"controller1");
-    //controller2->robotDataBucket(toRobot,"controller2");
     toRobot["motors"] = current["motors"];
-    //cout << current << endl;
-
 
     //send update to all active connections
     for(auto &connection : server.get_connections())
-        send<WsServer>(connection,serverConnectionState[connection],serverConnectionData[connection],current,milliseconds_since_epoch,true);
+        send<WsServer>(connection,serverConnectionState[connection],serverConnectionData[connection],current,milliseconds_since_epoch,false);
     if(clientConnected)
         send<WsClient>(client.connection,clientConnectionState,clientConnectionData,toRobot,milliseconds_since_epoch,false);
   }

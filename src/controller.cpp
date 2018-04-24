@@ -128,22 +128,3 @@ void Controller::controllerDataBucket(DataBucket &b, String s){
         b["motors"]["br"] = x.at<double>(3,0);
 }
 
-/*
-void Controller::robotDataBucket(DataBucket &robotBucket, String s, int controlScheme){
-    DataBucket controllerBucket;
-    this->controllerDataBucket(controllerBucket,s);
-    switch(controlScheme){
-        case 1:
-            if(s == "controller1"){
-
-
-            }
-            else if(s == "controller2"){
-            }
-            break;
-        //alternate schemes go here as cases
-        default:
-            break;
-    }
-}
-*/
