@@ -90,7 +90,7 @@ void network() {
   WsServer server;
   server.config.port = 8080;
   server.config.thread_pool_size = 1;
-  //server.config.address = "0.0.0.0";
+  server.config.address = "0.0.0.0";
 
   //endpoint state storage
   std::map<shared_ptr<WsServer::Connection>, DataBucket> serverConnectionData;
@@ -166,8 +166,8 @@ void network() {
 
 
     //CLIENT
-  //WsClient client("localhost:8081/");
-   WsClient client("169.254.85.1:8081/");
+  WsClient client("localhost:8081/");
+//  WsClient client("192.168.1.1:8081/");
   client.on_open = [&clientConnectionState,&clientConnectionData,&toRobot,&clientConnected](shared_ptr<WsClient::Connection> connection) {
     clientConnected = true;
     clientConnectionData = toRobot;
@@ -199,6 +199,7 @@ void network() {
         current["pin"] = temp["pin"];
         current["robotCpu"] = Util::round<double>((double)temp["cpu"]);
         current["robotRam"] = Util::round<double>((double)temp["ram"]);
+        current["sensor"] = temp["sensor"];
         auto send_stream = make_shared<WsClient::SendStream>();
         *send_stream << "\x06";
         connection->send(send_stream);

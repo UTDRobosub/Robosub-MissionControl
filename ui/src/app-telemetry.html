@@ -33,6 +33,9 @@
       #gSerial {
         --graph-line-color: var(--paper-purple-500);
       }
+      #gIMU {
+        --graph-line-color: var(--paper-purple-500);
+      }
       #gLog1 {
         --graph-height: 300px;
       }
@@ -110,8 +113,11 @@
           <graph-line id="gRAM" title="Robot RAM" data="[[data]]" x-key="time" x-seconds=30 y-key="robotRam" y-label="RAM Usage (%)" y-min=0 y-max=100 auto-refresh=[[autoRefreshInterval]]></graph-line>
         </div>
         <div class="xs12 s12 m6">
-          <graph-multiline id="gIMU" title="Acceleration" data="[[data]]" x-key="time" x-seconds=30 y-key1="robotCpu" y-key2="robotRam" y-label1="x" y-label2="y" y-label="Raw Data" y-min=0 y-max=100 auto-refresh=[[autoRefreshInterval]]></graph-multiline>
+          <graph-line id="gIMU" title="Sensor Data" data="[[data]]" x-key="time" x-seconds=30 y-key="sensor" y-label="Sensor Data" y-min=0 y-max=255 auto-refresh=[[autoRefreshInterval]]></graph-line>
         </div>
+        <!-- <div class="xs12 s12 m6">
+          <graph-multiline id="gIMU" title="Acceleration" data="[[data]]" x-key="time" x-seconds=30 y-key1="robotCpu" y-key2="robotRam" y-label1="x" y-label2="y" y-label="Raw Data" y-min=0 y-max=100 auto-refresh=[[autoRefreshInterval]]></graph-multiline>
+        </div> -->
         <div class="xs12 s12 m6">
           <graph-robot id="gMotors" title="Motor Values" data="[[data.motors]]"></graph-robot>
         </div>
