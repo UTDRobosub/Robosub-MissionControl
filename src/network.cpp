@@ -19,6 +19,10 @@ public:
   long rtt = 0;
 };
 
+int convertMotorValuesToRobot(double value) {
+    return (int)((value * 200.0) + 1500.0);
+}
+
 template <class T>
 void send(shared_ptr<typename T::Connection> connection,
           ConnectionState &connectionState,
@@ -29,50 +33,54 @@ void send(shared_ptr<typename T::Connection> connection,
 ){
       if (!connectionState.ready) return;
 
-      //compress data
-      DataBucket previousState = connectionData;
-      
-      //remove time-dependent variables
-      DataBucket timeRemoved = current;
-      timeRemoved.remove("robot_rtt");
-      timeRemoved.remove("robotCpu");
-      timeRemoved.remove("robotRam");
+      try {
+          //compress data
+          DataBucket previousState = connectionData;
 
-      DataBucket compressed = timeRemoved.compress(previousState);
-      previousState = current;
-      previousState.remove("robot_rtt");
-      previousState.remove("robotCpu");
-      previousState.remove("robotRam");
-      connectionData = previousState;
+          //remove time-dependent variables
+          DataBucket timeRemoved = current;
+          timeRemoved.remove("robot_rtt");
+          timeRemoved.remove("robotCpu");
+          timeRemoved.remove("robotRam");
 
-      //skip if no changes
-      if (compressed.toJson().empty()) return;
+          DataBucket compressed = timeRemoved.compress(previousState);
+          previousState = current;
+          previousState.remove("robot_rtt");
+          previousState.remove("robotCpu");
+          previousState.remove("robotRam");
+          connectionData = previousState;
 
-      //update time-dependent values and recompress
-      DataBucket sentState = current;
-      sentState["time"] = milliseconds_since_epoch;
-      sentState["rtt"] = connectionState.rtt;
-      sentState["controllerTime"] = controllerTime;
-      compressed = sentState.compress(previousState);
+          //skip if no changes
+          if (compressed.toJson().empty()) return;
 
-      //update connection state
-      connectionState.ready = false;
-      connectionState.lastSend = robosub::Time::millis();
+          //update time-dependent values and recompress
+          DataBucket sentState = current;
+          sentState["time"] = milliseconds_since_epoch;
+          sentState["rtt"] = connectionState.rtt;
+          sentState["controllerTime"] = controllerTime;
+          compressed = sentState.compress(previousState);
 
-      //check if better to send as compressed or uncompressed
-      //cout << current.toString().length() << " " << compressed.toString().length() << endl;
-      //cout << "sending" << current << endl;
-      if (!compress || current.toString().length() < compressed.toString().length())
-      {
-        //better to send uncompressed
-        auto send_stream = make_shared<typename T::SendStream>();
-        *send_stream << sentState;
-        connection->send(send_stream);
-      } else {
-        //send compressed
-        auto send_stream = make_shared<typename T::SendStream>();
-        *send_stream << compressed;
-        connection->send(send_stream);
+          //update connection state
+          connectionState.ready = false;
+          connectionState.lastSend = robosub::Time::millis();
+
+          //check if better to send as compressed or uncompressed
+          //cout << current.toString().length() << " " << compressed.toString().length() << endl;
+          //cout << "sending" << current << endl;
+          if (!compress || current.toString().length() < compressed.toString().length())
+          {
+              //better to send uncompressed
+              auto send_stream = make_shared<typename T::SendStream>();
+              *send_stream << sentState;
+              connection->send(send_stream);
+          } else {
+              //send compressed
+              auto send_stream = make_shared<typename T::SendStream>();
+              *send_stream << compressed;
+              connection->send(send_stream);
+          }
+      } catch (exception e) {
+          cout << "Failed to send to robot: " << e.what() << endl;
       }
 }
 
@@ -86,7 +94,7 @@ void network() {
 
 
 
-  //initialize server
+  //initialize server for web browser communication
   WsServer server;
   server.config.port = 8080;
   server.config.thread_pool_size = 1;
@@ -166,8 +174,8 @@ void network() {
 
 
     //CLIENT
-  WsClient client("localhost:8081/");
-//  WsClient client("192.168.1.1:8081/");
+//  WsClient client("localhost:8081/");
+  WsClient client("192.168.1.1:8081/");
   client.on_open = [&clientConnectionState,&clientConnectionData,&toRobot,&clientConnected](shared_ptr<WsClient::Connection> connection) {
     clientConnected = true;
     clientConnectionData = toRobot;
@@ -192,14 +200,21 @@ void network() {
       clientConnectionState.ready = true;
       clientConnectionState.rtt = robosub::Time::millis() - clientConnectionState.lastSend;
     } else {
-        // cout << "Client: Message received: \"" << message_str << "\"" << endl;
-        DataBucket temp = DataBucket(message_str);
-        // current["rand"] = temp["rand"];
-        current["robot_rtt"] = temp["rtt"];
-        current["pin"] = temp["pin"];
-        current["robotCpu"] = Util::round<double>((double)temp["cpu"]);
-        current["robotRam"] = Util::round<double>((double)temp["ram"]);
-        current["sensor"] = temp["sensor"];
+        cout << "Client message: \"" << message_str << "\"" << endl;
+        try
+        {
+            DataBucket temp = DataBucket(message_str);
+            // current["rand"] = temp["rand"];
+            current["robot_rtt"] = temp["rtt"];
+            current["pin"] = temp["pin"];
+            current["robotCpu"] = Util::round<double>((double)temp["cpu"]);
+            current["robotRam"] = Util::round<double>((double)temp["ram"]);
+//            current["sensor"] = temp["sensor"];
+            current["imu"] = temp["imu"];
+        } catch (exception e) {
+            cout << e.what() << endl;
+        }
+
         auto send_stream = make_shared<WsClient::SendStream>();
         *send_stream << "\x06";
         connection->send(send_stream);
@@ -231,8 +246,6 @@ void network() {
 
 
 
-
-
   //wait one second for server to start
   robosub::Time::waitMillis(1000);
   cout << "Server started" << endl;
@@ -242,6 +255,7 @@ void network() {
   int i=0;
   while(true) {
     current["index"] = (i++ / 1000) % 1000; //force refresh approx every second
+    current["robot_connected"] = clientConnected;
 
     robosub::Time::waitMillis(1);
 
@@ -251,6 +265,10 @@ void network() {
     controller2->controllerDataBucket(current,"controller2");
 
     toRobot["motors"] = current["motors"];
+    toRobot["motors"]["bl"] = convertMotorValuesToRobot(current["motors"]["bl"]);
+    toRobot["motors"]["br"] = convertMotorValuesToRobot(current["motors"]["br"]);
+    toRobot["motors"]["ul"] = convertMotorValuesToRobot(current["motors"]["ul"]);
+    toRobot["motors"]["ur"] = convertMotorValuesToRobot(current["motors"]["ur"]);
 
     //send update to all active connections
     for(auto &connection : server.get_connections())
@@ -258,6 +276,4 @@ void network() {
     if(clientConnected)
         send<WsClient>(client.connection,clientConnectionState,clientConnectionData,toRobot,milliseconds_since_epoch,false);
   }
-
-  return;
 }

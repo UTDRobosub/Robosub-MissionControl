@@ -68,7 +68,8 @@
       div.title[status="Connected"] .live {
         background-color: var(--paper-green-600);
       }
-      div.title[status="Connection lost"] .live {
+      div.title[status="Connection lost"] .live,
+      div.title[status="Robot lost"] .live {
         background-color: var(--paper-red-600);
       }
       div.title[status="High latency"] .live {
@@ -115,9 +116,15 @@
         <div class="xs12 s12 m6">
           <graph-line id="gIMU" title="Sensor Data" data="[[data]]" x-key="time" x-seconds=30 y-key="sensor" y-label="Sensor Data" y-min=0 y-max=255 auto-refresh=[[autoRefreshInterval]]></graph-line>
         </div>
-        <!-- <div class="xs12 s12 m6">
-          <graph-multiline id="gIMU" title="Acceleration" data="[[data]]" x-key="time" x-seconds=30 y-key1="robotCpu" y-key2="robotRam" y-label1="x" y-label2="y" y-label="Raw Data" y-min=0 y-max=100 auto-refresh=[[autoRefreshInterval]]></graph-multiline>
-        </div> -->
+        <div class="xs12 s12 m6">
+          <graph-multiline id="gIMU" title="Acceleration" data="[[data]]" x-key="time" x-seconds=30 y-key1="imuAx" y-key2="imuAy" y-key3="imuAz" y-label1="x" y-label2="y" y-label3="z" y-label="Gs" y-min=-2 y-max=2 auto-refresh=[[autoRefreshInterval]]></graph-multiline>
+        </div>
+        <div class="xs12 s12 m6">
+          <graph-multiline id="gIMU" title="Euler Angles" data="[[data]]" x-key="time" x-seconds=30 y-key1="eulerYaw" y-key2="eulerPitch" y-key3="eulerRoll" y-label1="yaw" y-label2="pitch" y-label3="roll" y-label="deg" y-min=0 y-max=360 auto-refresh=[[autoRefreshInterval]]></graph-multiline>
+        </div>
+        <div class="xs12 s12 m6">
+          <graph-line id="gIMU" title="Heading" data="[[data]]" x-key="time" x-seconds=30 y-key="imuHeading" y-label="Heading" y-min=0 y-max=360 auto-refresh=[[autoRefreshInterval]]></graph-line>
+        </div>
         <div class="xs12 s12 m6">
           <graph-robot id="gMotors" title="Motor Values" data="[[data.motors]]"></graph-robot>
         </div>
@@ -245,7 +252,18 @@
           }
 
           this.set("currentTime", moment().format("hh:mm:ss.SSS a"));
-          this.set("status", "Connected");
+          this.set("status", state.robot_connected ? "Connected" : "Robot lost");
+          if (state.imu) {
+            state.imuAx = state.imu.ax;
+            state.imuAy = state.imu.ay;
+            state.imuAz = state.imu.az;
+            state.imuHeading = state.imu.ch;
+            state.eulerPitch = state.imu.ep;
+            state.eulerYaw = state.imu.ey;
+            state.eulerRoll = state.imu.er;
+          }
+
+          // console.log(state)
           this.set("data", state);
           this.ws.send(String.fromCharCode(6)); //send ACK
         };
