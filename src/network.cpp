@@ -19,8 +19,10 @@ public:
   long rtt = 0;
 };
 
+const double MOTOR_POWER = 50.0;
+
 int convertMotorValuesToRobot(double value) {
-    return (int)((value * 200.0) + 1500.0);
+    return (int)((value * MOTOR_POWER) + 1500.0);
 }
 
 template <class T>
