@@ -1,3 +1,4 @@
+
 #include <opencv2/opencv.hpp>
 #include <librobosub/robosub.h>
 #include <signal.h>
@@ -12,6 +13,7 @@ void catchSignal(int signal) {
 }
 
 
+<<<<<<< HEAD
 void video(){
 
     const int border = 0;
@@ -61,4 +63,10 @@ void video(){
     }
     delete(framerecv[0]);
     return;
+=======
+void video(int port){
+	
+	while(running);
+	return;
+>>>>>>> 904a546fc7490782594ae5e0c3e1399ef7f8a3c5
 }
