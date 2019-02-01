@@ -8,7 +8,7 @@ using namespace std;
 //using namespace robosub;
 
 void control();
-void video(int);
+void video();
 void network();
 
 bool running = true;
@@ -22,18 +22,12 @@ int main(int argc, char* argv[]){
     controller1 = new Controller;
     controller2 = new Controller;
 
-    int videoPort;
-    //cout << "Video port: ";
-    //cin >> videoPort;
-    videoPort = 12345;
-
-
     thread controlThread(control);
-    //thread videoThread(video,videoPort);
+    thread videoThread(video);
     thread networkThread(network);
 
     controlThread.join();
-    //videoThread.join();
+    videoThread.join();
     networkThread.join();
 
     return 0;
