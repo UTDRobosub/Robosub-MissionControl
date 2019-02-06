@@ -10,7 +10,7 @@ using namespace std;
 //using namespace robosub;
 
 void control();
-void video(int);
+void video();
 void network(ReadoutData*);
 
 bool running = true;
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]){
 	videoPort = 8002;
 	
 	thread controlThread(control);
-	thread videoThread(video, videoPort);
+	thread videoThread(video);
 	thread networkThread(network, &readoutData);
 	thread readoutThread(readout, &readoutData);
 	
