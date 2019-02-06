@@ -26,10 +26,14 @@ public:
 	long rtt = 0;
 };
 
-const double MOTOR_POWER = 50.0;
+const double MOTOR_POWER = 100.0;
+const double MOTOR_DEADBAND = 50.0; //minimum motor power
 
 int convertMotorValuesToRobot(double value) {
-    return (int)((value * MOTOR_POWER) + 1500.0);
+    double power = value * MOTOR_POWER;
+    if (abs(power) < MOTOR_DEADBAND) power = 0;
+
+    return (int)(power + 1500.0);
 }
 
 template <class T>
