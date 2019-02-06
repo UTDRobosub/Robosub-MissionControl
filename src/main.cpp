@@ -10,13 +10,8 @@ using namespace std;
 //using namespace robosub;
 
 void control();
-<<<<<<< HEAD
 void video();
-void network();
-=======
-void video(int);
 void network(ReadoutData*);
->>>>>>> 904a546fc7490782594ae5e0c3e1399ef7f8a3c5
 
 bool running = true;
 bool refresh = false;
@@ -24,22 +19,6 @@ Controller* controller1;
 Controller* controller2;
 long controllerTime;
 
-<<<<<<< HEAD
-int main(int argc, char* argv[]){
-
-    controller1 = new Controller;
-    controller2 = new Controller;
-
-    thread controlThread(control);
-    thread videoThread(video);
-    thread networkThread(network);
-
-    controlThread.join();
-    videoThread.join();
-    networkThread.join();
-
-    return 0;
-=======
 ReadoutData readoutData;
 
 int main(int argc, char* argv[]){
@@ -53,7 +32,7 @@ int main(int argc, char* argv[]){
 	videoPort = 8002;
 	
 	thread controlThread(control);
-	thread videoThread(video, videoPort);
+	thread videoThread(video);
 	thread networkThread(network, &readoutData);
 	thread readoutThread(readout, &readoutData);
 	
@@ -63,7 +42,6 @@ int main(int argc, char* argv[]){
 	readoutThread.join();
 	
 	return 0;
->>>>>>> 904a546fc7490782594ae5e0c3e1399ef7f8a3c5
 }
 
 //Thread for mission control window (everything but video feed)
