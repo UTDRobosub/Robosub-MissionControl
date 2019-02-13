@@ -3,8 +3,8 @@
 #include "readout.h"
 
 const char* connectionAddr = 
-	//"192.168.1.1:8081"
-	"0.0.0.0:8081"
+	"192.168.1.1:8081"
+	//"0.0.0.0:8081"
 ;
 
 using namespace robosub;
@@ -183,9 +183,9 @@ void network(ReadoutData* readout) {
 			readout->cpu = current["robotCpu"];
 			readout->ram = current["robotRam"];
 			
-			readout->accel_x = current["imu"]["ax"];
-			readout->accel_y = current["imu"]["ay"];
-			readout->accel_z = current["imu"]["az"];
+			//readout->accel_x = current["imu"]["ax"];
+			//readout->accel_y = current["imu"]["ay"];
+			//readout->accel_z = current["imu"]["az"];
 			
 			readout->valid = true;
 		}catch(exception e){

@@ -50,7 +50,7 @@ void video(){
 
 
 	imshow("Video Feeds", display);
-	
+
 	//imshow("Video Feeds", latestframe[0]);
 
 
@@ -58,7 +58,7 @@ void video(){
 	fps.frame();
 	cout << fps.fps() << endl;
 
-        waitKey(1);
+        waitKey(5);
     }
     delete(framerecv[0]);
     return;

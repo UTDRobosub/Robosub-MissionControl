@@ -27,17 +27,15 @@ int main(int argc, char* argv[]){
 	controller2 = new Controller;
 	
 	int videoPort;
-	//cout << "Video port: ";
-	//cin >> videoPort;
 	videoPort = 8002;
 	
 	thread controlThread(control);
-	thread videoThread(video);
+	//thread videoThread(video);
 	thread networkThread(network, &readoutData);
 	thread readoutThread(readout, &readoutData);
 	
 	controlThread.join();
-	videoThread.join();
+	//videoThread.join();
 	networkThread.join();
 	readoutThread.join();
 	
