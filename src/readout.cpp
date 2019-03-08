@@ -85,20 +85,29 @@ struct ContinuousPlotGraphic{
 
 void readout(ReadoutData* data){
 	
-	int graphwidth = 200;
+	int pointsToGraph = 200;
+	int graphHeight = 200;
+	int graphWidth = 600;
+	
+	int curGraphY = -graphHeight;
 	
 	//params: identifier title numSeries xpos ypos xsize ysize xmin xmax ymin ymax
-	ContinuousPlotGraphic rtt("rtt", "Robot RTT (ms)", 1, 0, 0, 600, 300, 0, graphwidth, 0, 10);
-	ContinuousPlotData rtt_rtt(graphwidth); rtt.addSeries("RTT", rtt_rtt);
+	ContinuousPlotGraphic rtt("rtt", "Robot RTT", 1, 0, curGraphY+=graphHeight, graphWidth, graphHeight, 0, pointsToGraph, 0, 10);
+	ContinuousPlotData rtt_rtt(pointsToGraph); rtt.addSeries("RTT ms", rtt_rtt);
 	
-	ContinuousPlotGraphic cpu("cpu", "Robot Resource Usage", 1, 0, 300, 600, 300, 0, graphwidth, 0, 100);
-	ContinuousPlotData cpu_cpu(graphwidth); cpu.addSeries("CPU"   , cpu_cpu);
-	ContinuousPlotData cpu_ram(graphwidth); cpu.addSeries("Memory", cpu_ram);
+	ContinuousPlotGraphic cpu("cpu", "Robot Resource Usage", 1, 0, curGraphY+=graphHeight, graphWidth, graphHeight, 0, pointsToGraph, 0, 100);
+	ContinuousPlotData cpu_cpu(pointsToGraph); cpu.addSeries("CPU %"   , cpu_cpu);
+	ContinuousPlotData cpu_ram(pointsToGraph); cpu.addSeries("Memory %", cpu_ram);
 	
-	ContinuousPlotGraphic accel("accel", "Acceleration", 3, 0, 600, 600, 300, 0, graphwidth, -2, 2);
-	ContinuousPlotData accel_x(graphwidth); accel.addSeries("X", accel_x);
-	ContinuousPlotData accel_y(graphwidth); accel.addSeries("Y", accel_y);
-	ContinuousPlotData accel_z(graphwidth); accel.addSeries("Z", accel_z);
+	ContinuousPlotGraphic accel("accel", "Acceleration", 3, 0, curGraphY+=graphHeight, graphWidth, graphHeight, 0, pointsToGraph, -2, 2);
+	ContinuousPlotData accel_x(pointsToGraph); accel.addSeries("X G", accel_x);
+	ContinuousPlotData accel_y(pointsToGraph); accel.addSeries("Y G", accel_y);
+	ContinuousPlotData accel_z(pointsToGraph); accel.addSeries("Z G", accel_z);
+	
+	ContinuousPlotGraphic stuff("stuff", "Stuff", 1, 0, curGraphY+=graphHeight, graphWidth, graphHeight, 0, pointsToGraph, 0, 256);
+	ContinuousPlotData stuff_stuff(pointsToGraph); stuff.addSeries("Stuff", stuff_stuff);
+	
+	unsigned char i;
 	
 	while(true){
 		if(data->valid){
@@ -112,9 +121,12 @@ void readout(ReadoutData* data){
 			accel_z.addPoint(data->accel_z);
 		}
 		
+		stuff_stuff.addPoint(i+=5);
+		
 		rtt.show();
 		cpu.show();
 		accel.show();
+		stuff.show();
 		
 		robosub::Time::waitMillis(10);
 	}
