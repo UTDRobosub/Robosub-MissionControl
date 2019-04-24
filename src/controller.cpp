@@ -69,7 +69,7 @@ void Controller::controllerDataBucket(DataBucket &b, String s){
             b[s]["lx"] = SDL_JoystickGetAxis(joystick, 0)/128.0 /256.0;
             b[s]["ly"] = SDL_JoystickGetAxis(joystick, 1)/128.0 /256.0;
             b[s]["rx"] = SDL_JoystickGetAxis(joystick, 3)/128.0 /256.0;
-            b[s]["ry"] = SDL_JoystickGetAxis(joystick, 4)/128.0 /256.0;
+            b[s]["ry"] = (short)(SDL_JoystickGetAxis(joystick, 4)/128.0); //this one's for verical motors, [-255,255]
             b[s]["a"] = SDL_JoystickGetButton(joystick, 0);
             b[s]["b"] = SDL_JoystickGetButton(joystick, 1);
             b[s]["x"] = SDL_JoystickGetButton(joystick, 2);
@@ -126,5 +126,6 @@ void Controller::controllerDataBucket(DataBucket &b, String s){
         b["motors"]["ur"] = x.at<double>(1,0);
         b["motors"]["bl"] = x.at<double>(2,0);
         b["motors"]["br"] = x.at<double>(3,0);
+        b["motors"]["v"]  = b[s]["ry"];
 }
 
