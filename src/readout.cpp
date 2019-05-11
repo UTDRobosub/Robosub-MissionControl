@@ -4,6 +4,38 @@
 #include <opencv2/opencv.hpp>
 #include <librobosub/timeutil.h>
 
+struct Vec3{
+	double x, y, z;
+};
+
+struct Mat33{
+	double
+		a11, a12, a13,
+		a21, a22, a23,
+		a31, a32, a33
+	;
+	
+	Vec3 multiplyVector(Vec3 v){
+		Vec3 o;
+		o.x = v.x*a11 + v.y*a12 + v.z*a13;
+		o.y = v.x*a21 + v.y*a22 + v.z*a23;
+		o.z = v.x*a31 + v.y*a32 + v.z*a33;
+		return o;
+	}
+	
+	Vec3 fromEuler(Vec3 e){
+		a11 =  cos(e.z)*cos(e.x) - cos(e.y)*sin(e.x)*sin(e.z);
+		a12 =  cos(e.z)*sin(e.x) + cos(e.y)*cos(e.x)*sin(e.z);
+		a13 =  sin(e.z)*sin(e.y);
+		a21 = -sin(e.z)*cos(e.x) - cos(e.y)*sin(e.x)*cos(e.z);
+		a22 = -sin(e.z)*sin(e.x) + cos(e.y)*cos(e.x)*cos(e.z);
+		a23 =  cos(e.z)*sin(e.y);
+		a31 =  sin(e.y)*sin(e.x);
+		a32 = -sin(e.y)*cos(e.x);
+		a33 =  cos(e.y);
+	}
+};
+
 struct ContinuousPlotData{
 	float* dataPoints;
 	int queuePos;
